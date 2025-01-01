@@ -5,7 +5,7 @@ const Login: React.FC = () => {
   return (
     <div className="w-[100vw] min-h-[100vh] bg-gradient-to-br from-white to-green-800 pt-[rem] flex items-center justify-center">
       <div className="animate-fadeIn">
-        <h1 className="text-4xl font-bold text-white text-center mb-8 animate-pulse">
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400  to-gray-600 text-center mb-8 animate-pulse">
           Welcome Back
         </h1>
 
