@@ -6,13 +6,15 @@ import { handleChange } from "./businessLogics/loginBusinessLogic.ts";
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     username: "",
-    password: "",
-    firstName: "",
-    secondName: "",
     email: "",
+    password: "",
+    name: "",
+    phone: "",
     location: "",
-    city: "",
+    gender: "",
+    age: "",
     status: "",
+    role: "",
   });
 
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -20,8 +22,8 @@ const Register: React.FC = () => {
   return (
     <div className="w-[100vw] min-h-[100vh] generalBG pt-[rem] flex items-center justify-center">
       <div className="animate-fadeIn">
-        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400  to-gray-600 text-center mb-8 animate-pulse">
-          Welcome Back
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-gray-600 text-center mb-8 animate-pulse">
+          Create Your Account
         </h1>
 
         <form
@@ -32,12 +34,23 @@ const Register: React.FC = () => {
           <div className="flex flex-col gap-[1.5rem]">
             {/* username */}
             <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gra y-400"
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
               id="username"
               type="text"
-              placeholder="Username or email"
+              placeholder="Username"
               value={formData.username}
-              name={"username"}
+              name="username"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* email */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              name="email"
               onChange={(e) => handleChange(e, setFormData)}
             />
 
@@ -46,9 +59,86 @@ const Register: React.FC = () => {
               className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
               id="password"
               type="password"
-              name={"password"}
+              name="password"
               placeholder="Password"
               value={formData.password}
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* name */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="name"
+              type="text"
+              placeholder="Name"
+              value={formData.name}
+              name="name"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* phone */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="phone"
+              type="text"
+              placeholder="Phone"
+              value={formData.phone}
+              name="phone"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* location */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="location"
+              type="text"
+              placeholder="Location"
+              value={formData.location}
+              name="location"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* gender */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="gender"
+              type="text"
+              placeholder="Gender"
+              value={formData.gender}
+              name="gender"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* age */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="age"
+              type="number"
+              placeholder="Age"
+              value={formData.age}
+              name="age"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* status */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="status"
+              type="text"
+              placeholder="Status"
+              value={formData.status}
+              name="status"
+              onChange={(e) => handleChange(e, setFormData)}
+            />
+
+            {/* role */}
+            <input
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              id="role"
+              type="text"
+              placeholder="Role"
+              value={formData.role}
+              name="role"
               onChange={(e) => handleChange(e, setFormData)}
             />
 
@@ -74,7 +164,7 @@ const Register: React.FC = () => {
               <Button
                 type="submit"
                 className="w-full py-4 bg-green-500 text-white rounded-lg font-semibold transform hover:translate-y-[-2px] hover:shadow-lg transition-all duration-300">
-                Login
+                Register
               </Button>
             </div>
 
