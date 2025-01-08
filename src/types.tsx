@@ -18,8 +18,8 @@ export type FormSubmitHandlerType = (
   formData: newUserFormData,
   stateSetter: (state: boolean) => void,
   state: boolean,
-  errorMsgSetter: (value: string | null) => void,
-  errorSetter: (value: boolean) => void,
-  SuccessMsgSetter: (value: string) => void,
-  setAuthFeedback?: (value: string) => void
+  setErrorMessage: (value: string | null) => void,
+  setErrorState: (value: boolean) => void,
+  UpdateSuccessMessage: (value: string) => void,
+  SetSuccessMessage: (value: boolean) => void
 ) => Promise<void>;
