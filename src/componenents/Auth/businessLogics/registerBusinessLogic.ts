@@ -28,7 +28,8 @@ type FormSubmitHandler = (
   stateSetter: (state: boolean) => void,
   state: boolean,
   errorMsgSetter: (value: string | null) => void,
-  errorSetter: (value: boolean) => void
+  errorSetter: (value: boolean) => void,
+  SuccessMsgSetter: (value: string) => void
 ) => Promise<void>;
 
 export const handleSubmit: FormSubmitHandler = async (
@@ -37,13 +38,15 @@ export const handleSubmit: FormSubmitHandler = async (
   stateSetter,
   state,
   errorMsgSetter,
-  errorSetter
+  errorSetter,
+  SuccessMsgSetter
 ) => {
+  //defualt state
   stateSetter(state);
   errorSetter(false);
 
   try {
-    const result = await axios.post("knkk", formData);
+    const result = await axios.post<{ data: any }>("knkk", formData);
 
     if (!result) {
       console.log("errorResult", result);
@@ -52,9 +55,18 @@ export const handleSubmit: FormSubmitHandler = async (
     }
 
     console.log(result);
-    if (result.status === 200) errorMsgSetter("registered successfully");
+    if (result.status === 200) {
+      SuccessMsgSetter("registered successfully");
+
+      //navigate user to dashboard
+      //............
+
+      //............
+    }
   } catch (error) {
+    errorSetter(true);
     errorMsgSetter(error.message);
+
     console.log(error);
   }
 };
