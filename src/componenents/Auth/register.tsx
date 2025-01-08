@@ -3,16 +3,17 @@ import Button from "../utils/Button.tsx";
 import { handleSubmit } from "./businessLogics/registerBusinessLogic.ts";
 import { handleChange } from "./businessLogics/loginBusinessLogic.ts";
 import ToastNotification from "../hooks/useNotification.tsx";
+import type { newUserFormData } from "../../types.tsx";
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<newUserFormData>({
     username: "",
     email: "",
     password: "",
     name: "",
     phone: "",
     location: "",
-    gender: "",
+    gender: undefined,
     age: "",
     status: "",
     role: "",
@@ -23,6 +24,7 @@ const Register: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isError, setisError] = useState<boolean>(false);
   const [isSuccess, setisSuccess] = useState<boolean>(false);
+  const [authFeedback, setAuthFeedback] = useState<string | null>(null);
 
   return (
     <div className="w-[100vw] min-h-[100vh] generalBG pt-[rem] flex items-center justify-center">
@@ -47,15 +49,25 @@ const Register: React.FC = () => {
           />
         )}
 
+        {/* form start */}
+
         <form
           onSubmit={(e) =>
-            handleSubmit(e, formData, setLoading, isLoading, setErrorMsg, setisError, setSuccessMsg)
+            handleSubmit(
+              e,
+              formData,
+              setLoading,
+              isLoading,
+              setErrorMsg,
+              setisError,
+              setSuccessMsg,
+              setAuthFeedback
+            )
           }
           action="/register"
           method="post"
           className="bg-green-900/10 backdrop-blur-sm h-auto w-[400px] shadow-2xl rounded-2xl p-8 transform hover:scale-[1.02] transition-all duration-300">
           <div className="flex flex-col gap-[1.5rem]">
-            
             {/* username */}
             <input
               className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
@@ -203,6 +215,7 @@ const Register: React.FC = () => {
             </div>
           </div>
         </form>
+        {/* form end */}
       </div>
     </div>
   );
