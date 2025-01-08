@@ -1,6 +1,6 @@
 import axios from "axios";
 import type React from "react";
-type stateTypes = {
+type formDataType = {
   username: string;
   email: string;
   password: string;
@@ -24,17 +24,37 @@ type stateTypes = {
  */
 type FormSubmitHandler = (
   e: React.FormEvent<HTMLFormElement>,
-  formData: any,
-  statesetter: () => void,
-  state: stateTypes
+  formData: formDataType,
+  stateSetter: (state: boolean) => void,
+  state: boolean,
+  errorMsgSetter: (value: string | null) => void,
+  errorSetter: (value: boolean) => void
 ) => Promise<void>;
 
-export const handleSubmit: FormSubmitHandler = async (e, formData, statesetter, state) => {
+export const handleSubmit: FormSubmitHandler = async (
+  e,
+  formData,
+  stateSetter,
+  state,
+  errorMsgSetter,
+  errorSetter
+) => {
+  stateSetter(state);
+  errorSetter(false);
+
   try {
     const result = await axios.post("knkk", formData);
 
+    if (!result) {
+      console.log("errorResult", result);
+      errorSetter(true);
+      return;
+    }
+
     console.log(result);
+    if (result.status === 200) errorMsgSetter("registered successfully");
   } catch (error) {
+    errorMsgSetter(error.message);
     console.log(error);
   }
 };
