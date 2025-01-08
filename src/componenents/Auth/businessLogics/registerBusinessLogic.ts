@@ -18,7 +18,8 @@ export const handleSubmit: FormSubmitHandlerType = async (
   state,
   errorMsgSetter,
   errorSetter,
-  SuccessMsgSetter
+  SuccessMsgSetter,
+  SetSuccessMessage
 ) => {
   //defualt state for state and error setter
   stateSetter(state);
