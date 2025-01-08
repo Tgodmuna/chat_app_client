@@ -1,5 +1,6 @@
 import axios from "axios";
-import { FormSubmitHandlerType } from "../../../types";
+import { FormSubmitHandlerType, newUserFormData } from "../../../types";
+import joi from "joi";
 
 /**
  * Handles the form submission event.
@@ -26,6 +27,13 @@ export const handleSubmit: FormSubmitHandlerType = async (
   errorSetter(false);
 
   try {
+    const { error } = validationHandler(formData);
+    if (error) {
+      errorMsgSetter(error.details[0].message);
+      errorSetter(true);
+      return;
+    }
+    // post the data after successful validation
     const result = await axios.post<{ data: any }>("knkk", formData);
 
     if (!result) {
@@ -37,6 +45,7 @@ export const handleSubmit: FormSubmitHandlerType = async (
     console.log(result);
     if (result.status === 200) {
       SuccessMsgSetter("registered successfully");
+      SetSuccessMessage(true);
 
       //navigate user to dashboard
       //............
@@ -51,15 +60,36 @@ export const handleSubmit: FormSubmitHandlerType = async (
   }
 };
 
-export const registerInitialState = {
-  username: "",
-  email: "",
-  password: "",
-  name: "",
-  phone: "",
-  location: "",
-  gender: "",
-  age: "",
-  status: "",
-  role: "",
+//validation handler
+export const validationHandler = (formData: newUserFormData) => {
+  if (
+    !formData.username ||
+    !formData.email ||
+    !formData.password ||
+    !formData.name ||
+    !formData.phone ||
+    !formData.location ||
+    !formData
+  ) {
+    throw new Error("fields cant be empty");
+  }
+  const formDataSchema = joi.object({
+    username: joi.string().min(4).required(),
+    name: joi.string().min(3).required(),
+    email: joi
+      .string()
+      .required()
+      .regex(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/),
+
+    password: joi
+      .string()
+      .min(8)
+      .required()
+      .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+
+    phone: joi.number(),
+    location: joi.string(),
+  });
+
+  return formDataSchema.validate(formData);
 };
