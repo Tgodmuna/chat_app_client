@@ -55,6 +55,7 @@ const Register: React.FC = () => {
           method="post"
           className="bg-green-900/10 backdrop-blur-sm h-auto w-[400px] shadow-2xl rounded-2xl p-8 transform hover:scale-[1.02] transition-all duration-300">
           <div className="flex flex-col gap-[1.5rem]">
+            
             {/* username */}
             <input
               className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
