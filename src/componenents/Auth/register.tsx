@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "../utils/Button.tsx";
 import { handleSubmit } from "./businessLogics/registerBusinessLogic.ts";
 import { handleChange } from "./businessLogics/loginBusinessLogic.ts";
+import ToastNotification from "../hooks/useNotification.tsx";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,10 @@ const Register: React.FC = () => {
   });
 
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [ErrorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [isError, setisError] = useState<boolean>(false);
+  const [isSuccess, setisSuccess] = useState<boolean>(false);
 
   return (
     <div className="w-[100vw] min-h-[100vh] generalBG pt-[rem] flex items-center justify-center">
@@ -26,8 +31,26 @@ const Register: React.FC = () => {
           Create Your Account
         </h1>
 
+        {/* error toast */}
+        {isError && (
+          <ToastNotification
+            message={ErrorMsg}
+            type="error"
+          />
+        )}
+
+        {/* success toast */}
+        {isSuccess && (
+          <ToastNotification
+            message={successMsg}
+            type="success"
+          />
+        )}
+
         <form
-          onSubmit={(e) => handleSubmit(e, formData, setLoading, isLoading)}
+          onSubmit={(e) =>
+            handleSubmit(e, formData, setLoading, isLoading, setErrorMsg, setisError, setSuccessMsg)
+          }
           action="/register"
           method="post"
           className="bg-green-900/10 backdrop-blur-sm h-auto w-[400px] shadow-2xl rounded-2xl p-8 transform hover:scale-[1.02] transition-all duration-300">
