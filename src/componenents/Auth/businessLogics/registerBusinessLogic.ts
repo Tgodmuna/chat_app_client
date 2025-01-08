@@ -1,17 +1,5 @@
 import axios from "axios";
-import type React from "react";
-type formDataType = {
-  username: string;
-  email: string;
-  password: string;
-  name: string;
-  phone: string;
-  location: string;
-  gender: string;
-  age: string;
-  status: string;
-  role: string;
-};
+import { FormSubmitHandlerType } from "../../../types";
 
 /**
  * Handles the form submission event.
@@ -22,17 +10,8 @@ type formDataType = {
  * @param state - The current state.
  * @returns A promise that resolves to void.
  */
-type FormSubmitHandler = (
-  e: React.FormEvent<HTMLFormElement>,
-  formData: formDataType,
-  stateSetter: (state: boolean) => void,
-  state: boolean,
-  errorMsgSetter: (value: string | null) => void,
-  errorSetter: (value: boolean) => void,
-  SuccessMsgSetter: (value: string) => void
-) => Promise<void>;
 
-export const handleSubmit: FormSubmitHandler = async (
+export const handleSubmit: FormSubmitHandlerType = async (
   e,
   formData,
   stateSetter,
@@ -41,7 +20,7 @@ export const handleSubmit: FormSubmitHandler = async (
   errorSetter,
   SuccessMsgSetter
 ) => {
-  //defualt state
+  //defualt state for state and error setter
   stateSetter(state);
   errorSetter(false);
 
@@ -69,4 +48,17 @@ export const handleSubmit: FormSubmitHandler = async (
 
     console.log(error);
   }
+};
+
+export const registerInitialState = {
+  username: "",
+  email: "",
+  password: "",
+  name: "",
+  phone: "",
+  location: "",
+  gender: "",
+  age: "",
+  status: "",
+  role: "",
 };
