@@ -1,25 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../utils/Button.tsx";
+import { handleChange, handleSubmit } from "./businessLogics/loginBusinessLogic.ts";
 
 const Login: React.FC = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    rememberMe: false,
+  });
+
+  const [isLoading, setLoading] = useState<boolean>(false);
+
   return (
-    <div className="w-[100vw] min-h-[100vh] bg-gradient-to-br from-white to-green-800 pt-[rem] flex items-center justify-center">
+    <div className="w-[100vw] min-h-[100vh] generalBG pt-[rem] flex items-center justify-center">
       <div className="animate-fadeIn">
         <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400  to-gray-600 text-center mb-8 animate-pulse">
           Welcome Back
         </h1>
 
         <form
+          onSubmit={(e) => handleSubmit(e, formData, setLoading, isLoading)}
           action="/login"
           method="post"
           className="bg-green-900/10 backdrop-blur-sm h-auto w-[400px] shadow-2xl rounded-2xl p-8 transform hover:scale-[1.02] transition-all duration-300">
           <div className="flex flex-col gap-[1.5rem]">
             {/* username */}
             <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
+              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gra y-400"
               id="username"
               type="text"
               placeholder="Username or email"
+              value={formData.username}
+              name={"username"}
+              onChange={(e) => handleChange(e, setFormData)}
             />
 
             {/* password */}
@@ -27,7 +40,10 @@ const Login: React.FC = () => {
               className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
               id="password"
               type="password"
+              name={"password"}
               placeholder="Password"
+              value={formData.password}
+              onChange={(e) => handleChange(e, setFormData)}
             />
 
             {/* rememberMe */}
@@ -39,6 +55,9 @@ const Login: React.FC = () => {
                   className="w-4 h-4 accent-green-500 rounded focus:ring-2 focus:ring-blue-500 transition-all duration-300"
                   id="rememberMe"
                   type="checkbox"
+                  onChange={(e) => {
+                    handleChange(e, setFormData);
+                  }}
                 />
                 <span className="select-none">Remember Me</span>
               </label>
