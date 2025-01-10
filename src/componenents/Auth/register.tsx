@@ -24,9 +24,9 @@ const Register: React.FC = () => {
   const [isSuccess, setisSuccess] = useState<boolean>(false);
 
   return (
-    <div className="w-[100vw] generalBG p-[0.5rem] overflow flex items-center justify-center">
-      <div className="animate-fadeIn">
-        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-gray-600 text-center mb-8 animate-pulse">
+    <div className="w-full min-h-screen generalBG p-4 flex items-center justify-center">
+      <div className="animate-fadeIn w-full max-w-md">
+        <h1 className="text-2xl font-bold pt-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-gray-600 text-center mb-8 animate-pulse">
           Create Your Account
         </h1>
 
@@ -46,8 +46,8 @@ const Register: React.FC = () => {
           }}
           action="/register"
           method="post"
-          className="bg-green-900/10 backdrop-blur-sm h-auto w-[400px] shadow-2xl rounded-2xl p-8 transform hover:scale-[1.02] transition-all duration-300">
-          {/* first child */}
+          className="bg-green-900/10 backdrop-blur-sm h-auto w-full shadow-2xl rounded-2xl p-8 transform hover:scale-105 transition-all duration-300">
+          <div className="flex flex-col gap-4"></div>
           {/*  */}
           {/*  */}
           <div className={"flex flex-col gap-[1rem] max-w-[100vw] "}>
