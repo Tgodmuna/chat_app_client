@@ -62,6 +62,7 @@ export const handleSubmit: FormSubmitHandlerType = async (
 
 //validation handler
 export const validationHandler = (formData: newUserFormData) => {
+  //check for empty fields
   if (
     !formData.username ||
     !formData.email ||
@@ -73,6 +74,8 @@ export const validationHandler = (formData: newUserFormData) => {
   ) {
     throw new Error("fields cant be empty");
   }
+
+  //check for constraints
   const formDataSchema = joi.object({
     username: joi.string().min(4).required(),
     name: joi.string().min(3).required(),
