@@ -32,20 +32,23 @@ const NavigationIcons = () => {
     <div className="flex flex-col size-full justify-between text-neutral-700">
       {/* first child */}
       <div
-        className={`flex flex-col items-center justify-between p-2 w-full text-2xl gap-3 h-[10rem] bg-green-200 rounded-xl rounded-t-none`}>
+        className={`flex flex-col items-center justify-between p-2 w-full text-2xl gap-3 h-[10rem] bg-green-200 rounded-xl`}>
         <FaRegMessage
+          title={"message"}
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "message" ? "text-green-500 scale-125 transition-all duration-200" : ""
           }`}
           onClick={() => handleIconClick("message")}
         />
         <FaUserMd
+          title={"friends"}
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "userMd" ? " text-green-500 scale-125 transition-all duration-200" : ""
           }`}
           onClick={() => handleIconClick("userMd")}
         />
         <FaRegHeart
+          title={"favorites"}
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "heart" ? " text-green-500 scale-125 transition-all duration-200 " : ""
           }`}
@@ -53,22 +56,24 @@ const NavigationIcons = () => {
         />
       </div>
 
-      {/* second child */}
       <div
         className={`flex items-center w-full text-2xl justify-between flex-col h-[15rem] bg-green-200 p-3 rounded-xl`}>
         <FaUserPen
+          title={"edit profile"}
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "userPen" ? "text-green-500  scale-125 transition-all duration-200 " : ""
           }`}
           onClick={() => handleIconClick("userPen")}
         />
         <FaGears
+          title={"settings"}
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "gears" ? "text-green-500  scale-125 transition-all duration-200" : ""
           }`}
           onClick={() => handleIconClick("gears")}
         />
         <FaSignOutAlt
+          title={"log out"}
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "signOut" ? "text-green-500 scale-125 transition-all duration-200" : ""
           }`}
