@@ -89,6 +89,16 @@ const Search: React.FC<{ chats: Conversation[] | null }> = ({ chats }) => {
   const [SearchData, setSearchData] = useState<null | string>(null);
   const [searchResult, setSearchResult] = useState<Conversation[] | null>(null);
   const [CHATS] = useState<undefined | typeof chats>(chats);
+  const [showSearchData, setshowSearchData] = useState<boolean>(false);
+
+  const turnOnSearchData = React.useCallback(
+    (value: boolean) => {
+      if (searchResult && searchResult.length > 0) {
+        setshowSearchData(value);
+      }
+    },
+    [searchResult]
+  );
 
   const handleSearch = React.useCallback(
     (text: string) => {
