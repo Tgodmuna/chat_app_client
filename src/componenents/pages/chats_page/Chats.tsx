@@ -85,7 +85,7 @@ const Header = () => {
 };
 
 //search chats
-const Search: React.FC<{ chats: Conversation[] | null }> = ({ chats }) => {
+const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
   const [SearchData, setSearchData] = useState<null | string>(null);
   const [searchResult, setSearchResult] = useState<Conversation[] | null>(null);
   const [CHATS] = useState<undefined | typeof chats>(chats);
@@ -164,4 +164,4 @@ const Search: React.FC<{ chats: Conversation[] | null }> = ({ chats }) => {
       </div>
     </div>
   );
-};
+});
