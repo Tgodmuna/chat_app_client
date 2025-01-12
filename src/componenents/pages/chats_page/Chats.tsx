@@ -90,23 +90,35 @@ const Search: React.FC<{ chats: Conversation[] | null }> = ({ chats }) => {
   const [searchResult, setSearchResult] = useState<Conversation[] | null>(null);
   const [CHATS] = useState<undefined | typeof chats>(chats);
 
-  const handleSearch: (text: string) => void = (text) => {
-    if (!CHATS) {
-      throw new Error("CHATS data is not available. Please ensure the chats are loaded properly.");
-    }
+  const handleSearch = React.useCallback(
+    (text: string) => {
+      if (!CHATS) {
+        throw new Error(
+          "CHATS data is not available. Please ensure the chats are loaded properly."
+        );
+      }
 
-    const result = CHATS.filter((CHAT) => {
-      return CHAT.participants.some((participant) => {
-        if (participant._id !== "id") {
-          return participant.name.includes(text);
-        }
+      const result = CHATS.filter((CHAT) => {
+        return CHAT.participants.some((participant) => {
+          if (participant._id !== "id") {
+            return participant.name.includes(text);
+          }
 
-        return false;
+          return false;
+        });
       });
-    });
 
-    setSearchResult(result);
-  };
+      setSearchResult(result);
+      turnOnSearchData(true);
+    },
+    [CHATS, turnOnSearchData]
+  );
+
+  useEffect(() => {
+    if (SearchData) {
+      handleSearch(SearchData);
+    }
+  }, [SearchData, handleSearch]);
 
   return (
     <div className={`flex flex-col items-center justify-center w-full`}>
