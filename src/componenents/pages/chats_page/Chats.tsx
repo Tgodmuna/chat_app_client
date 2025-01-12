@@ -9,7 +9,7 @@ import { MdPerson3 } from "react-icons/md";
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
 
-  //on component mount, fetch chats
+  //on component mount, fetch chats its messages
   useEffect(() => {
     const fetchChats = async () => {
       try {
