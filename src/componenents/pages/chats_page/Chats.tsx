@@ -101,6 +101,8 @@ const Chats: React.FC = () => {
         "flex flex-col bg-slate-100 items-center  overflow-y-hidden gap-[1rem] pt-[2rem] px-1 overflow-scroll h-[100vh] w-full"
       }>
       <Header />
+      <Search chats={chats} />
+      {conversations}
     </div>
   );
 };
