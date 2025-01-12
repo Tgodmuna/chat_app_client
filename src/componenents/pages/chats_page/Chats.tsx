@@ -1,4 +1,10 @@
-import React from "react";
+import axios from "axios";
+import React, { useState, useEffect, type ChangeEvent } from "react";
+import type { Conversation, Endpoint } from "../../../types";
+import { FaRegMessage, FaRegSquarePlus } from "react-icons/fa6";
+import { FaTimes } from "react-icons/fa";
+import { TfiMore } from "react-icons/tfi";
+import { MdPerson3 } from "react-icons/md";
 
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
