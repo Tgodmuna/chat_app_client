@@ -98,7 +98,7 @@ const Chats: React.FC = () => {
   return (
     <div
       className={
-        "flex flex-col items-center justify-center overflow-y-hidden gap-[1rem] p-4  overflow-scroll max-h-[100vw] w-full"
+        "flex flex-col bg-slate-100 items-center  overflow-y-hidden gap-[1rem] pt-[2rem] px-1 overflow-scroll h-[100vh] w-full"
       }>
       <Header />
     </div>
