@@ -52,6 +52,49 @@ const Chats: React.FC = () => {
     fetchChats();
   }, []);
 
+  const conversations = chats?.map((chat) => {
+    const lastMessage = chat.lastMessage;
+
+    const profilePicturePath = chat.participants.find(
+      (participant) => participant._id !== "id"
+    )?.profilePicture;
+
+    const MessageSender = chat.participants.find((participant) => participant._id !== "id")?.name;
+
+    return (
+      <div
+        key={chat._id}
+        className={`flex flex-row items-center justify-between w-full p-1 rounded-xl bg-white shadow-md`}>
+        <div
+          className={`flex justify-between items-center w-full bg-slate-300  p-4 border border-b-0 border-gray-600 `}>
+          {/* first child */}
+          <div className="flex items-center justify-center gap-2">
+            {profilePicturePath ? (
+              <img
+                src={profilePicturePath}
+                alt="profile"
+                className="rounded-full size-[1rem] m-auto"
+              />
+            ) : (
+              <MdPerson3 className={`w-full text-2xl text-gray-500 m-auto`} />
+            )}
+
+            <div className="flex flex-col items-center justify-center gap-3">
+              <h1 className={`text-black`}> {MessageSender}</h1>
+              <p className={`text-sm italic text-neutral-400 m-auto`}>{lastMessage?.content}</p>
+            </div>
+          </div>
+
+          {/* second child */}
+          <div className="flex flex-col w-[3rem] items-center justify-center gap-2">
+            <div className={`p-4 size-8 bg-green-700 text-white text-start italic`}>{3}</div>
+            <TfiMore className="text-green-400 text-[5px]" />
+          </div>
+        </div>
+      </div>
+    );
+  });
+
   return (
     <div
       className={
