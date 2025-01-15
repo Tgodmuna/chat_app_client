@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "../utils/Button.tsx";
-import { handleSubmit } from "./businessLogics/registerBusinessLogic.ts";
+import { handleFormLevel, handleSubmit } from "./businessLogics/registerBusinessLogic.ts";
 import { handleChange } from "./businessLogics/loginBusinessLogic.ts";
 import type { newUserFormData } from "../../types.tsx";
 import Spinner from "../utils/Spinner.tsx";
@@ -12,17 +12,17 @@ const Register: React.FC = () => {
     password: "",
     name: "",
     phone: "",
-    location: "",
+    location: { city: "", state: "", country: "" },
     gender: undefined,
     age: "",
     status: "",
-    role: "",
   });
   const [isLoading, setLoading] = useState<boolean>(false);
   const [ErrorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isError, setisError] = useState<boolean>(false);
   const [isSuccess, setisSuccess] = useState<boolean>(false);
+  const [formLevel, setFormLevel] = useState<number>(1);
 
   return (
     <div className="w-full min-h-screen generalBG p-4 flex items-center justify-center">
@@ -31,7 +31,6 @@ const Register: React.FC = () => {
           Create Your Account
         </h1>
 
-        {/* form start */}
         <form
           onSubmit={(e) => {
             return handleSubmit(
@@ -49,176 +48,223 @@ const Register: React.FC = () => {
           method="post"
           className="bg-green-900/10 backdrop-blur-sm h-auto w-full shadow-2xl rounded-2xl p-8 transform hover:scale-105 transition-all duration-300">
           <div className="flex flex-col gap-4"></div>
-          {/*  */}
-          {/*  */}
-          <div className={"flex flex-col gap-[1rem] max-w-[100vw] "}>
-            {/* username */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="username"
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              required={true}
-              name="username"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
+          <div className={"flex max-w-[100vw] "}>
+            {/* First Level */}
+            <div className={`formLevelStyle ${formLevel === 1 ? "flex " : "hidden"}`}>
+              <input
+                className="FormInputStyle"
+                id="username"
+                type="text"
+                placeholder="Username"
+                value={formData.username}
+                required={true}
+                name="username"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
 
-            {/* email */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="email"
-              required={true}
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              name="email"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
+              <input
+                className="FormInputStyle"
+                id="email"
+                required={true}
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                name="email"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
 
-            {/* password */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="password"
-              type="password"
-              name="password"
-              required={true}
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* name */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="name"
-              type="text"
-              placeholder="Name"
-              value={formData.name}
-              required={true}
-              name="name"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* phone */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="phone"
-              type="text"
-              placeholder="Phone"
-              value={formData.phone}
-              name="phone"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* location */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="location"
-              type="text"
-              placeholder="Location"
-              required={true}
-              value={formData.location}
-              name="location"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* gender */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="gender"
-              type="text"
-              placeholder="Gender"
-              required={true}
-              value={formData.gender}
-              name="gender"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* age */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="age"
-              type="number"
-              placeholder="Age"
-              value={formData.age}
-              name="age"
-              required={true}
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* status */}
-            <input
-              className="bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-400"
-              id="status"
-              type="text"
-              placeholder="Status"
-              value={formData.status}
-              required={true}
-              name="status"
-              onChange={(e) => handleChange(e, setFormData)}
-            />
-
-            {/* rememberMe */}
-            <div className="flex justify-between items-center text-sm text-gray-300">
-              <label
-                htmlFor="rememberMe"
-                className="flex items-center space-x-3 cursor-pointer hover:text-white transition-colors duration-300">
-                <input
-                  className="w-4 h-4 accent-green-500 rounded focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-                  id="rememberMe"
-                  type="checkbox"
-                  onChange={(e) => {
-                    handleChange(e, setFormData);
-                  }}
-                />
-                <span className="select-none">Remember Me</span>
-              </label>
+              <input
+                className="FormInputStyle"
+                id="password"
+                type="password"
+                name="password"
+                required={true}
+                placeholder="Password"
+                value={formData.password}
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+              <Button
+                type={"button"}
+                onClick={() => {
+                  if (!formData.username && !formData.email && !formData.password) {
+                    setErrorMsg("fields are required to be filled");
+                    setisError(true);
+                    return;
+                  }
+                  setisError(false);
+                  handleFormLevel(2, formLevel, setFormLevel);
+                }}
+                className={`formLevelButton`}>
+                Next
+              </Button>
             </div>
 
-            {/* submit button */}
-            <div className="flex gap-2 justify-center mt-4">
-              {isLoading ? (
-                <Spinner />
-              ) : (
-                <Button
-                  disabled={isLoading}
-                  type="submit"
-                  className={`w-full ${
-                    isLoading ? "bg-opacity-15" : ""
-                  } py-4 bg-green-500 text-white rounded-lg font-semibold transform hover:translate-y-[-2px] hover:shadow-lg transition-all duration-300`}>
-                  {isLoading ? "loading....." : "Register"}
-                </Button>
-              )}
+            {/* Second Level */}
+            <div className={`formLevelStyle  ${formLevel === 2 ? "flex" : "hidden "}  `}>
+              <input
+                className="FormInputStyle"
+                id="name"
+                type="text"
+                placeholder="Name"
+                value={formData.name}
+                required={true}
+                name="name"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+
+              <input
+                className="FormInputStyle"
+                id="phone"
+                type="text"
+                placeholder="Phone"
+                value={formData.phone}
+                name="phone"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+
+              <input
+                className="FormInputStyle"
+                id="city"
+                type="text"
+                placeholder="City"
+                required={true}
+                value={formData?.location?.city}
+                name="location.city"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+
+              <input
+                className="FormInputStyle"
+                id="state"
+                type="text"
+                placeholder="State"
+                value={formData?.location?.state}
+                name="location.state"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+
+              <input
+                className="FormInputStyle"
+                id="country"
+                type="text"
+                placeholder="Country"
+                required={true}
+                value={formData.location.country}
+                name="location.country"
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+
+              <Button
+                type={"button"}
+                onClick={() => {
+                  if (!formData.location.city || !formData.location.country) {
+                    setErrorMsg("fields are required to be filled");
+                    setisError(true);
+                    return;
+                  }
+
+                  setisError(false);
+                  handleFormLevel(3, formLevel, setFormLevel);
+                }}
+                className={`formLevelButton`}>
+                Next
+              </Button>
             </div>
 
-            {/*  have an account? */}
-            <div className="mt-6 text-center">
-              <p className="text-gray-600">already got an account?</p>
-              <a
-                href="/login"
-                className="text-blue-700 hover:text-blue-600 transition-colors duration-300 mt-2 inline-block">
-                login →
-              </a>
+            {/* Third Level */}
+            <div className={`formLevelStyle ${formLevel === 3 ? "flex" : "hidden "}`}>
+              <select
+                title={"gender selection"}
+                className="FormInputStyle"
+                id="gender"
+                required={true}
+                value={formData.gender || ""}
+                name="gender"
+                onChange={(e) => handleChange(e, setFormData)}>
+                <option
+                  value=""
+                  disabled>
+                  Select Gender
+                </option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+
+              <input
+                className="FormInputStyle"
+                id="age"
+                type="number"
+                placeholder="Age"
+                value={formData.age.toString()}
+                name="age"
+                required={true}
+                onChange={(e) => handleChange(e, setFormData)}
+              />
+
+              <select
+                title={"gender"}
+                className="FormInputStyle"
+                id="status"
+                required={true}
+                value={formData.status}
+                name="status"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange(e, setFormData)
+                }>
+                <option
+                  value=""
+                  disabled>
+                  Select Status
+                </option>
+                <option value="single">Single</option>
+                <option value="married">Married</option>
+                <option value="divorced">Divorced</option>
+              </select>
+
+              <div className="flex gap-2 justify-center mt-4">
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <Button
+                    disabled={isLoading}
+                    type="submit"
+                    className={`w-full ${
+                      isLoading ? "bg-opacity-15" : ""
+                    } p-4 bg-green-500 text-white rounded-lg font-semibold transform hover:translate-y-[-2px] hover:shadow-lg transition-all duration-300`}>
+                    {isLoading ? "loading....." : "Register"}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </form>
-        {/* form end */}
 
-        {/* Feedback Messages */}
-        {isError && ErrorMsg && (
+        {isError && ErrorMsg ? (
           <div className="mt-4 text-center text-red-500">
             <p>{ErrorMsg}</p>
           </div>
+        ) : (
+          ""
         )}
-        {isSuccess && successMsg && (
+        {isSuccess && successMsg ? (
           <div className="mt-4 text-center text-green-500">
             <p>{successMsg}</p>
           </div>
+        ) : (
+          ""
         )}
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-600">already got an account?</p>
+          <a
+            href="/login"
+            className="text-blue-700 hover:text-blue-600 transition-colors duration-300 mt-2 inline-block">
+            login →
+          </a>
+        </div>
       </div>
     </div>
   );
 };
-
 export default Register;

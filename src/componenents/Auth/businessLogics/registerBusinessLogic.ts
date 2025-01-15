@@ -7,11 +7,10 @@ import joi from "joi";
  *
  * @param e - The form submission event.
  * @param formData - The data from the form to be submitted.
- * @param statesetter - A function to set the state.
+ * @param stateSetter - A function to set the state.
  * @param state - The current state.
  * @returns A promise that resolves to void.
  */
-
 export const handleSubmit: FormSubmitHandlerType = async (
   e,
   formData,
@@ -22,77 +21,81 @@ export const handleSubmit: FormSubmitHandlerType = async (
   SuccessMsgSetter,
   SetSuccessMessage
 ) => {
-  //defualt state for state and error setter
+  // Reset state and error flags
   stateSetter(state);
   errorSetter(false);
 
+  // Prevent default form submission behavior
+  e.preventDefault();
+
   try {
-    const { error } = validationHandler(formData);
-    if (error) {
-      errorMsgSetter(error.details[0].message);
-      errorSetter(true);
-      return;
-    }
-    // post the data after successful validation
-    const result = await axios.post<{ data: any }>("knkk", formData);
-
-    if (!result) {
-      console.log("errorResult", result);
+    const validation = validationHandler(formData);
+    if (validation.error) {
+      // Handle validation errors gracefully
+      errorMsgSetter(validation.error.details[0].message);
       errorSetter(true);
       return;
     }
 
-    console.log(result);
+    // Post the data after successful validation
+    const result = await axios.post<{ data: any }>(
+      "https://example.com/api/endpoint", // Replace with a valid URL
+      formData
+    );
+
     if (result.status === 200) {
-      SuccessMsgSetter("registered successfully");
+      SuccessMsgSetter("Registered successfully");
       SetSuccessMessage(true);
 
-      //navigate user to dashboard
-      //............
-
-      //............
+      // Navigate user to dashboard
+      // (implement navigation logic here)
     }
-  } catch (error) {
+  } catch (error: any) {
+    // Enhanced error handling
+    const errorMessage = error.response?.data?.message || error.message || "An error occurred";
     errorSetter(true);
-    errorMsgSetter(error.message);
-
-    console.log(error);
+    errorMsgSetter(errorMessage);
+    console.error("Request failed:", error);
   }
 };
 
-//validation handler
+// Validation handler
 export const validationHandler = (formData: newUserFormData) => {
-  //check for empty fields
-  if (
-    !formData.username ||
-    !formData.email ||
-    !formData.password ||
-    !formData.name ||
-    !formData.phone ||
-    !formData.location ||
-    !formData
-  ) {
-    throw new Error("fields cant be empty");
-  }
-
-  //check for constraints
-  const formDataSchema = joi.object({
+  const schema = joi.object({
     username: joi.string().min(4).required(),
     name: joi.string().min(3).required(),
     email: joi
       .string()
       .required()
       .regex(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/),
-
     password: joi
       .string()
       .min(8)
       .required()
       .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
-
-    phone: joi.number(),
-    location: joi.string(),
+    phone: joi.number().optional(),
+    location: joi.string().optional(),
   });
 
-  return formDataSchema.validate(formData);
+  // Validate and return
+  return schema.validate(formData, { abortEarly: false });
+};
+
+// Form level handler
+export const handleFormLevel = (
+  newLevel: number,
+  currentLevel: number,
+  stateSetter: React.Dispatch<React.SetStateAction<number>>
+) => {
+  try {
+    if (typeof newLevel !== "number") {
+      throw new Error("newLevel must be a number");
+    }
+    if (newLevel > currentLevel) {
+      stateSetter(newLevel);
+      console.log("Activated a new page");
+    }
+  } catch (error) {
+    console.error("Error handling form level:", error);
+  }
 };
