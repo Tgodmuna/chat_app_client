@@ -1,5 +1,8 @@
 //............................:form types
+
 export type Gender = "male" | "female" | "other";
+
+export type role = "user" | "admin";
 
 export type newUserFormData = {
   username: string;
@@ -9,9 +12,13 @@ export type newUserFormData = {
   password: string;
   name: string;
   phone: string;
-  location: string;
+  location: {
+    city: string;
+    state: string;
+    country: string;
+  };
   status: string;
-  role: string;
+  role: role;
 };
 
 export type FormSubmitHandlerType = (
@@ -41,7 +48,7 @@ type Message = {
 };
 
 export type Conversation = {
-  id: string;
+  _id: string;
   type: "direct" | "group";
   lastMessage: Message | null;
   participants: Participant[];
