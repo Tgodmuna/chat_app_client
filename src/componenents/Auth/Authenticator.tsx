@@ -1,15 +1,17 @@
 import React from "react";
 
-const Authenticator: React.FC<{ token: string; children: React.ReactNode }> = function ({
+const Authenticator: React.FC<{ token: string | null; children: React.ReactNode }> = function ({
   token,
   children,
 }) {
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    if (token) {
-      setIsAuthenticated(true);
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
     }
+    setIsAuthenticated(true);
   }, [token]);
 
   return (
