@@ -62,3 +62,22 @@ export type Endpoint = {
   url: string;
   headers?: Record<string, string>;
 };
+//.........................:.login form type
+export type loginformDataType = {
+  username: string;
+  password: string;
+  rememberMe: boolean;
+};
+
+export type userDataType = newUserFormData & {
+  profilePicture: string | null;
+  bio: string | null;
+  interest: string | null;
+  isOnline: boolean;
+  lastSeen: Date;
+  friendRequestList: string[];
+  friends: friendListType;
+  createdAt: Date;
+};
+
+type friendListType = string[] | [];
