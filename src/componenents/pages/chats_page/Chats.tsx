@@ -1,10 +1,11 @@
 import axios from "axios";
-import React, { useState, useEffect, type ChangeEvent } from "react";
+import React, { useState, useEffect, type ChangeEvent, useContext } from "react";
 import type { Conversation, Endpoint } from "../../../types";
 import { FaRegMessage, FaRegSquarePlus } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { TfiMore } from "react-icons/tfi";
 import { MdPerson3 } from "react-icons/md";
+import { LayoutContext } from "./Layout.tsx";
 
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
@@ -51,6 +52,7 @@ const Chats: React.FC = () => {
 
     fetchChats();
   }, []);
+  const layoutContext = useContext(LayoutContext);
 
   const conversations = chats?.map((chat) => {
     const lastMessage = chat.lastMessage;
@@ -97,9 +99,9 @@ const Chats: React.FC = () => {
 
   return (
     <div
-      className={
-        "flex flex-col bg-slate-100 items-center  overflow-y-hidden gap-[1rem] pt-[2rem] px-1 overflow-scroll h-[100vh] w-full"
-      }>
+      className={`flex flex-col ${
+        layoutContext?.showChats ? "w-full absolute px-1 " : "w-0  absolute"
+      }  bg-slate-100 transition-all duration-700 items-center  overflow-y-hidden gap-[1rem] pt-[2rem]  overflow-scroll h-[100vh]`}>
       <Header />
       <Search chats={chats} />
       {conversations}
@@ -109,7 +111,9 @@ const Chats: React.FC = () => {
 export default Chats;
 
 //chat header
-const Header = () => {
+const Header: React.FC = () => {
+  const layoutContext = useContext(LayoutContext);
+
   return (
     <div className={`flex flex-row items-center w-full justify-between p-1 `}>
       <p className={`text-neutral-700  text-xl font-bold  capitalize `}>Chats</p>
@@ -126,6 +130,7 @@ const Header = () => {
           <FaRegMessage className={`text-neutral-700`} />
         </div>
         <div
+          onClick={() => layoutContext?.setShowChats(false)}
           title={"go back"}
           className="chatIconStyle">
           <FaTimes className={`text-neutral-700`} />
@@ -134,7 +139,6 @@ const Header = () => {
     </div>
   );
 };
-
 //search chats
 const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
   const [SearchData, setSearchData] = useState<null | string>(null);
@@ -153,24 +157,28 @@ const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }
 
   const handleSearch = React.useCallback(
     (text: string) => {
-      if (!CHATS) {
-        throw new Error(
-          "CHATS data is not available. Please ensure the chats are loaded properly."
-        );
-      }
+      try {
+        if (!CHATS) {
+          throw new Error(
+            "CHATS data is not available. Please ensure the chats are loaded properly."
+          );
+        }
 
-      const result = CHATS.filter((CHAT) => {
-        return CHAT.participants.some((participant) => {
-          if (participant._id !== "id") {
-            return participant.name.includes(text);
-          }
+        const result = CHATS.filter((CHAT) => {
+          return CHAT.participants.some((participant) => {
+            if (participant._id !== "id") {
+              return participant.name.includes(text);
+            }
 
-          return false;
+            return false;
+          });
         });
-      });
 
-      setSearchResult(result);
-      turnOnSearchData(true);
+        setSearchResult(result);
+        turnOnSearchData(true);
+      } catch (exception) {
+        console.error(exception);
+      }
     },
     [CHATS, turnOnSearchData]
   );
@@ -194,7 +202,11 @@ const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }
         name={"search"}
         className={`border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500`}
       />
-      <div className="p-4 bg-white rounded-lg shadow-md">
+      {/* Display search results */}
+      <div
+        className={`p-4 ${
+          showSearchData ? "block" : "hidden"
+        } bg-white w-full relative rounded-lg shadow-md`}>
         {searchResult && searchResult.length > 0 ? (
           searchResult.map((chat, index) => (
             <div

@@ -15,10 +15,7 @@ const Layout = () => {
         <SideBar />
         <ChatBG />
         {/* other pages */}
-        <Chats
-          setShowChats={setShowChats}
-          showChats={showChats}
-        />
+        <Chats />
       </div>
     </LayoutContext.Provider>
   );
