@@ -7,7 +7,7 @@ import Navigation from "./Navigation.tsx";
  *
  * @returns {JSX.Element} The rendered sidebar component.
  */
-const SideBar = () => {
+const SideBar: React.FC = () => {
   return (
     <div className={` max-h-[100vh] h-[100vh] w-[4rem] bg-gray-50`}>
       <Navigation />

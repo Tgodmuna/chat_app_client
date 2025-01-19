@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import SideBar from "./SideBar.tsx";
 import ChatBG from "./ChatBackground.tsx";
+import Chats from "./Chats.tsx";
+import type { LayoutContextType } from "../../../types.tsx";
 
+export const LayoutContext = React.createContext<null | LayoutContextType>(null);
 const Layout = () => {
-  return (
-    <div className={`flex w-full max-w-full h-[100vw]`}>
-      <SideBar />
+  const [showChats, setShowChats] = useState<boolean>(false);
 
-      <ChatBG />
-    </div>
+  // layout context
+  return (
+    <LayoutContext.Provider value={{ showChats, setShowChats }}>
+      <div className={`flex w-full overflow max-w-full h-[100vw]`}>
+        <SideBar />
+        <ChatBG />
+        {/* other pages */}
+        <Chats
+          setShowChats={setShowChats}
+          showChats={showChats}
+        />
+      </div>
+    </LayoutContext.Provider>
   );
 };
 export default Layout;

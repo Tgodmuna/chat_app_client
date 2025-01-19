@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaSignOutAlt, FaUserMd } from "react-icons/fa";
 import { FaGears, FaRegHeart, FaRegMessage, FaUserPen } from "react-icons/fa6";
+import type { LayoutContextType } from "../../../types.ts";
+import { LayoutContext } from "./Layout.tsx";
 
 /**
  * NavigationIcons component renders a vertical navigation bar with icons.
@@ -21,12 +23,14 @@ import { FaGears, FaRegHeart, FaRegMessage, FaUserPen } from "react-icons/fa6";
  * @function
  * @name NavigationIcons
  */
-const NavigationIcons = () => {
+const NavigationIcons: React.FC = () => {
   const [activeIcon, setActiveIcon] = useState<string>("");
 
   const handleIconClick = (iconName: string) => {
     setActiveIcon(iconName);
   };
+  const context = LayoutContext;
+  let layoutContext = useContext<LayoutContextType | null>(context);
 
   return (
     <div className="flex flex-col size-full justify-between text-neutral-700">
@@ -38,7 +42,10 @@ const NavigationIcons = () => {
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "message" ? "text-green-500 scale-125 transition-all duration-200" : ""
           }`}
-          onClick={() => handleIconClick("message")}
+          onClick={() => {
+            layoutContext?.setShowChats(true);
+            handleIconClick("message");
+          }}
         />
         <FaUserMd
           title={"friends"}

@@ -7,16 +7,14 @@ import { FaRegCommentDots } from "react-icons/fa6";
  *
  * @returns {JSX.Element} The rendered navigation bar component.
  */
-const Navigation: React.FC<{
-  setShowChats: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setShowChats }) => {
+const Navigation: React.FC = () => {
   return (
     <nav className={`flex bg-inherit h-[100vh] flex-col w-full items-center`}>
       <div className={`w-full bg-green-600 p-5 text-4xl text-white text-center`}>
         <FaRegCommentDots />
       </div>
 
-      <NavigationIcons setShowChats={setShowChats} />
+      <NavigationIcons />
     </nav>
   );
 };
