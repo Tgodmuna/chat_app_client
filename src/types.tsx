@@ -64,7 +64,7 @@ export type Endpoint = {
 };
 //.........................:.login form type
 export type loginformDataType = {
-  username: string;
+  email: string;
   password: string;
   rememberMe: boolean;
 };
