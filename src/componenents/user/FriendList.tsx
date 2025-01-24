@@ -93,10 +93,12 @@ const FriendList: FC = () => {
     );
   });
 
+  const layoutContext = useContext(LayoutContext);
+
   return (
     <div
       className={`flex flex-col ${
-        true ? "w-full absolute px-1 " : "w-0  absolute"
+        layoutContext?.showFriends ? "w-full absolute px-1 " : "w-0  absolute"
       }  bg-slate-100 transition-all duration-700 items-center  overflow-y-hidden gap-[1rem] pt-[2rem]  overflow-scroll h-[100vh]`}>
       <Header />
       {<Search data={list} />}
@@ -138,7 +140,7 @@ const Header: React.FC = () => {
 };
 
 //search component
-const Search: React.FC<{ data: friendListType|null }> = React.memo(({ data }) => {
+const Search: React.FC<{ data: friendListType | null }> = React.memo(({ data }) => {
   const [SearchingData, setSearchData] = useState<null | string>(null);
   const [searchResult, setSearchResult] = useState<userDataType[] | null>(null);
   const [friends] = useState<undefined | typeof data>(undefined);
