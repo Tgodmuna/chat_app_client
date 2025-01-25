@@ -14,4 +14,18 @@
   .generalBG {
     @apply bg-gradient-to-br from-white to-green-800;
   }
+  .chatIconStyle {
+    @apply rounded-md bg-gray-500 bg-opacity-20 p-2;
+  }
+
+  .FormInputStyle {
+    @apply bg-white/20 border border-gray-300/20 text-white p-4 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 placeholder:text-gray-600;
+  }
+
+  .formLevelStyle {
+    @apply flex flex-col gap-[1rem] w-full overflow-hidden items-center;
+  }
+  .formLevelButton {
+    @apply rounded-md text-gray-500 text-xl sm:hover:bg-blue-400 bg-blue-300 p-3;
+  }
 }
