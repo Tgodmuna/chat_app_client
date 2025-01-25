@@ -1,7 +1,7 @@
 import React from "react";
 
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  className?: string; 
+  className?: string;
 };
 
 const Button: React.FC<Props> = ({ className, children, ...rest }) => {
