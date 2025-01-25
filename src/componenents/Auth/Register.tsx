@@ -4,6 +4,7 @@ import { handleFormLevel, handleSubmit } from "./businessLogics/registerBusiness
 import { handleChange } from "./businessLogics/loginBusinessLogic.ts";
 import type { newUserFormData } from "../../types.tsx";
 import Spinner from "../utils/Spinner.tsx";
+import { useNavigate } from "react-router-dom";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<newUserFormData>({
@@ -16,6 +17,7 @@ const Register: React.FC = () => {
     gender: undefined,
     age: "",
     status: "",
+    role: "user",
   });
   const [isLoading, setLoading] = useState<boolean>(false);
   const [ErrorMsg, setErrorMsg] = useState<string | null>(null);
@@ -23,6 +25,8 @@ const Register: React.FC = () => {
   const [isError, setisError] = useState<boolean>(false);
   const [isSuccess, setisSuccess] = useState<boolean>(false);
   const [formLevel, setFormLevel] = useState<number>(1);
+
+  const navigate = useNavigate();
 
   return (
     <div className="w-full min-h-screen generalBG p-4 flex items-center justify-center">
@@ -41,7 +45,8 @@ const Register: React.FC = () => {
               setErrorMsg,
               setisError,
               setSuccessMsg,
-              setisSuccess
+              setisSuccess,
+              navigate
             );
           }}
           action="/register"
@@ -128,7 +133,7 @@ const Register: React.FC = () => {
                 type="text"
                 placeholder="City"
                 required={true}
-                value={formData?.location?.city}
+                value={formData.location.city}
                 name="location.city"
                 onChange={(e) => handleChange(e, setFormData)}
               />
@@ -138,7 +143,7 @@ const Register: React.FC = () => {
                 id="state"
                 type="text"
                 placeholder="State"
-                value={formData?.location?.state}
+                value={formData.location.state}
                 name="location.state"
                 onChange={(e) => handleChange(e, setFormData)}
               />
@@ -175,20 +180,33 @@ const Register: React.FC = () => {
             <div className={`formLevelStyle ${formLevel === 3 ? "flex" : "hidden "}`}>
               <select
                 title={"gender selection"}
-                className="FormInputStyle"
+                className="FormInputStyle  "
                 id="gender"
                 required={true}
                 value={formData.gender || ""}
                 name="gender"
                 onChange={(e) => handleChange(e, setFormData)}>
                 <option
+                  className={"text-gray-400 text-center"}
                   value=""
                   disabled>
                   Select Gender
                 </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option
+                  className={`text-black text-lg`}
+                  value="male">
+                  Male
+                </option>
+                <option
+                  className={`text-black text-lg`}
+                  value="female">
+                  Female
+                </option>
+                <option
+                  className={`text-black text-lg`}
+                  value="other">
+                  Other
+                </option>
               </select>
 
               <input
@@ -217,9 +235,21 @@ const Register: React.FC = () => {
                   disabled>
                   Select Status
                 </option>
-                <option value="single">Single</option>
-                <option value="married">Married</option>
-                <option value="divorced">Divorced</option>
+                <option
+                  className={`text-black text-lg`}
+                  value="single">
+                  Single
+                </option>
+                <option
+                  className={`text-black text-lg`}
+                  value="married">
+                  Married
+                </option>
+                <option
+                  className={`text-black text-lg`}
+                  value="divorced">
+                  Divorced
+                </option>
               </select>
 
               <div className="flex gap-2 justify-center mt-4">
@@ -241,14 +271,14 @@ const Register: React.FC = () => {
         </form>
 
         {isError && ErrorMsg ? (
-          <div className="mt-4 text-center text-red-500">
+          <div className="mt-4 text-center text-red-700">
             <p>{ErrorMsg}</p>
           </div>
         ) : (
           ""
         )}
         {isSuccess && successMsg ? (
-          <div className="mt-4 text-center text-green-500">
+          <div className="mt-4 text-center text-green-800">
             <p>{successMsg}</p>
           </div>
         ) : (
