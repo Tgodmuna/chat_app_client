@@ -1,25 +1,27 @@
-import type { ChangeEvent, FC } from "react";
 import React, { useContext, useEffect, useState } from "react";
-import type { friendListType, userDataType } from "../../types";
+import type { FC } from "react";
 import axios from "axios";
+import { LayoutContext } from "../pages/chats_page/Layout.tsx";
 import { UseFetchToken } from "../hooks/UseFetchToken.ts";
 import { CgMoreVertical } from "react-icons/cg";
-import Dots from "../utils/Dots.tsx";
 import { FaRegSquarePlus } from "react-icons/fa6";
+import type { friendListType, userDataType } from "../../types";
 import { FaTimes } from "react-icons/fa";
-import { LayoutContext } from "../pages/chats_page/Layout.tsx";
+import Dots from "../utils/Dots.tsx";
 
-const FriendList: FC = () => {
-  const [list, setList] = useState<friendListType | null>(null);
+const FriendList: FC = React.memo(() => {
+  const [list, setList] = useState<friendListType>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const token = UseFetchToken();
+  const layoutContext = useContext(LayoutContext);
 
-  //fetch friends list on component mount.
+  // Fetch friends list
   useEffect(() => {
-    if (!token) return;
-
     const fetchFriendsList = async () => {
+      if (!token) return;
+
       try {
-        const response = await axios.get("njn", {
+        const response = await axios.get(`http://localhost:7000/api/user/friends_list`, {
           headers: {
             "x-auth-token": token,
             Accept: "application/json",
@@ -27,73 +29,23 @@ const FriendList: FC = () => {
           },
         });
 
-        if (response.status !== 200) {
-          console.log("response", response);
-          return;
+        if (response.status === 200) {
+          console.log(response);
+          setList(response.data.data);
+        } else {
+          console.error("Failed to fetch friends list:", response);
         }
-
-        setList(response.data.data);
       } catch (error) {
         console.error("Error fetching friends list:", error);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchFriendsList();
   }, [token]);
 
-  if (list && list?.length < 1) throw new Error("list is empty");
-
-  //loop over the  list
-  let Friends = list?.map((eachFriend, index) => {
-    return (
-      <div
-        key={index}
-        className={`flex w-full group p-2 justify-center items-center  bg-gray-200 `}>
-        {/* first child */}
-        <div className={`flex w-full gap-3  `}>
-          {/* avater */}
-          {eachFriend?.profilePicture ? (
-            <>
-              {" "}
-              <img
-                className={`size-4 p-2 rounded-full m-auto`}
-                src={eachFriend.profilePicture}
-                alt={`${eachFriend?.name} pic`}
-              />
-              <Dots
-                isOnline={eachFriend.isOnline}
-                className={`size-1 rounded-full p-[1px] absolute`}
-              />
-            </>
-          ) : (
-            <>
-              {" "}
-              <div className={`rounded-full size-4 p-2 bg-gray-300 text-black`}>{"AV"}</div>
-              <Dots
-                isOnline={eachFriend.isOnline}
-                className={`size-1 rounded-full p-[1px] absolute`}
-              />
-            </>
-          )}
-
-          {/* details  */}
-          <div className={`flex flex-col items-center jus`}>
-            <p className={`text-3xl text-center text-neutral-600 font-bold capitalize`}>
-              {eachFriend.username} <span className={`font-extralight`}>({eachFriend.name})</span>
-            </p>
-
-            <p className={`text-xl text-neutral-400 capitalize tetx-center font-light`}></p>
-          </div>
-        </div>
-
-        {/* second child */}
-        <CgMoreVertical
-          className={`hidden group-hover:block text-2xl text-green-400 hover:bg-green-600 transition-all place-items-end shadow-md shadow-black p-1`}
-        />
-      </div>
-    );
-  });
-
-  const layoutContext = useContext(LayoutContext);
+  if (loading) return <p>Loading friends...</p>;
 
   return (
     <div
@@ -101,21 +53,30 @@ const FriendList: FC = () => {
         layoutContext?.showFriends ? "w-full absolute px-1 " : "w-0  absolute"
       }  bg-slate-100 transition-all duration-700 items-center  overflow-y-hidden gap-[1rem] pt-[2rem]  overflow-scroll h-[100vh]`}>
       <Header />
-      {<Search data={list} />}
-
-      {list ? Friends : "no friends"}
+      <Search data={list} />
+      {list.length > 0 ? (
+        list.map((friend, index) => (
+          <FriendItem
+            key={index}
+            friend={friend}
+          />
+        ))
+      ) : (
+        <p className="text-gray-500">No friends found.</p>
+      )}
     </div>
   );
-};
+});
+
 export default FriendList;
 
-//header component
+// Header Component
 const Header: React.FC = () => {
   const layoutContext = useContext(LayoutContext);
 
   return (
-    <div className={`flex flex-row items-center w-full justify-between p-1 `}>
-      <p className={`text-neutral-700  text-xl font-bold  capitalize `}>friends</p>
+    <div className={`flex flex-row items-center w-full justify-between p-1`}>
+      <p className={`text-neutral-700  text-xl font-bold  capitalize`}>friends</p>
 
       <div className={`flex flex-row items-center justify-center gap-[0.5rem]`}>
         <div
@@ -123,7 +84,6 @@ const Header: React.FC = () => {
           className="chatIconStyle  p-1 rounded-md flex w-full items-center justify-between">
           <FaRegSquarePlus className={`text-neutral-700`} />
           <p className={`text-neutral-500 text-[11px] font-bold m-1 text-center  capitalize `}>
-            {" "}
             add friends
           </p>
         </div>
@@ -139,83 +99,79 @@ const Header: React.FC = () => {
   );
 };
 
-//search component
-const Search: React.FC<{ data: friendListType | null }> = React.memo(({ data }) => {
-  const [SearchingData, setSearchData] = useState<null | string>(null);
-  const [searchResult, setSearchResult] = useState<userDataType[] | null>(null);
-  const [friends] = useState<undefined | typeof data>(undefined);
-  const [showSearchData, setshowSearchData] = useState<boolean>(false);
+// Search Component
+const Search: FC<{ data: friendListType }> = ({ data }) => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<userDataType[]>([]);
 
-  //turn on searched result
-  const turnOnSearchData = React.useCallback(
-    (value: boolean) => {
-      if (searchResult && searchResult.length > 0) {
-        setshowSearchData(value);
-      }
-    },
-    [searchResult]
-  );
-
-  const handleSearch = React.useCallback(
-    (text: string) => {
-      try {
-        if (!friends) {
-          throw new Error(
-            " data is not available. Please ensure the data to search on is loaded properly."
-          );
-        }
-
-        const result = friends.filter((friend) => friend.name || friend.username === SearchingData);
-
-        setSearchResult(result);
-        turnOnSearchData(true);
-      } catch (exception) {
-        console.error(exception);
-      }
-    },
-    [SearchingData, friends, turnOnSearchData]
-  );
-
-  //on component mount, set search ready
   useEffect(() => {
-    if (SearchingData) {
-      handleSearch(SearchingData);
+    try {
+      if (!data || data === undefined) throw new Error("no data is passed");
+
+      const filtered = data.filter(
+        (friend) =>
+          friend.name.toLowerCase().includes(query.toLowerCase()) ||
+          friend.username.toLowerCase().includes(query.toLowerCase())
+      );
+      setResults(filtered);
+    } catch (exc) {
+      console.log(exc);
     }
-  }, [SearchingData, handleSearch]);
+  }, [query, data]);
 
   return (
-    <div className={`flex flex-col items-center justify-center w-full`}>
+    <div className="w-full px-4">
       <input
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setSearchData(e.target.value);
-          handleSearch(e.target.value);
-        }}
-        placeholder={`search`}
-        value={SearchingData ?? ""}
-        type={"text"}
-        name={"search"}
-        className={`border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        type="text"
+        placeholder="Search friends..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
       />
-
-      {/* Display search results */}
-      <div
-        className={`p-4 ${
-          showSearchData ? "block" : "hidden"
-        } bg-white w-full relative rounded-lg shadow-md`}>
-        {searchResult && searchResult.length > 0 ? (
-          searchResult.map((eachResult, index) => (
-            <div
+      {results.length > 0 ? (
+        <ul className="mt-4 space-y-2">
+          {results.map((friend, index) => (
+            <li
               key={index}
-              className="p-2 border-b border-gray-300 hover:bg-gray-100 transition duration-200">
-              {eachResult.name || eachResult.username}
-
-              {/* reminder: remember to complete to a better UI */}
-            </div>
-          ))
-        ) : (
-          <div className="text-gray-500 text-center p-4">No results found</div>
-        )}
-      </div>
+              className="p-2 bg-gray-100 rounded-md">
+              {friend.name} ({friend.username})
+            </li>
+          ))}
+        </ul>
+      ) : (
+        query && <p className="text-gray-500 mt-2">No results found.</p>
+      )}
     </div>
   );
-});
+};
+
+// Friend Item Component
+const FriendItem: FC<{ friend: userDataType }> = ({ friend }) => {
+  return (
+    <div className="flex items-center justify-between w-full p-2 bg-gray-200 rounded-md">
+      <div className="flex items-center gap-3">
+        {friend.profilePicture ? (
+          <img
+            src={friend.profilePicture}
+            alt={`${friend.name}'s avatar`}
+            className="w-10 h-10 rounded-full"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-10 h-10 bg-gray-300 rounded-full">
+            AV
+          </div>
+        )}
+        <div>
+          <p className="text-lg font-bold text-gray-700">
+            {friend.username} <span className="text-sm text-gray-500">({friend.name})</span>
+          </p>
+          <Dots
+            className={`size-1 rounded-full p-[1px] absolute`}
+            isOnline={friend.isOnline}
+          />
+        </div>
+      </div>
+      <CgMoreVertical className="text-xl text-gray-500" />
+    </div>
+  );
+};
