@@ -6,17 +6,17 @@ import { FaTimes } from "react-icons/fa";
 import { TfiMore } from "react-icons/tfi";
 import { MdPerson3 } from "react-icons/md";
 import { LayoutContext } from "./Layout.tsx";
+import { UseFetchToken } from "../../hooks/UseFetchToken.ts";
 
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
+  //get auth token
+  const token: string | null = UseFetchToken();
 
-  //on component mount, fetch chats its messages
+  //on component mount, fetch chats and its messages
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        //get auth token
-        const token: string | null = localStorage.getItem("token");
-
         if (!token) {
           throw new Error("No token found");
         }
@@ -140,7 +140,9 @@ const Header: React.FC = () => {
   );
 };
 //search chats
-const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
+export const Search: React.FC<{
+  chats: Conversation[] | null;
+}> = React.memo(({ chats }) => {
   const [SearchData, setSearchData] = useState<null | string>(null);
   const [searchResult, setSearchResult] = useState<Conversation[] | null>(null);
   const [CHATS] = useState<undefined | typeof chats>(chats);
@@ -196,7 +198,7 @@ const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }
           setSearchData(e.target.value);
           handleSearch(e.target.value);
         }}
-        placeholder={"search chat"}
+        placeholder={`search`}
         value={SearchData ?? ""}
         type={"text"}
         name={"search"}
