@@ -29,7 +29,8 @@ export type FormSubmitHandlerType = (
   setErrorMessage: (value: string | null) => void,
   setErrorState: (value: boolean) => void,
   UpdateSuccessMessage: (value: string) => void,
-  SetSuccessMessage: (value: boolean) => void
+  SetSuccessMessage: (value: boolean) => void,
+  navigate: (path: string) => void
 ) => Promise<void>;
 
 //.........................:chats types
@@ -76,8 +77,16 @@ export type userDataType = newUserFormData & {
   isOnline: boolean;
   lastSeen: Date;
   friendRequestList: string[];
-  friends: friendListType;
+  friends: friendListType | [];
   createdAt: Date;
 };
 
-type friendListType = string[] | [];
+export type friendListType = userDataType[];
+
+// ...................: layout context type
+export type LayoutContextType = {
+  showChats: boolean;
+  setShowChats: React.Dispatch<React.SetStateAction<boolean>>;
+  showFriends: boolean;
+  setShowFriends: React.Dispatch<React.SetStateAction<boolean>>;
+};
