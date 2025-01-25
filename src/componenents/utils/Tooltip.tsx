@@ -5,7 +5,9 @@ const TooltipItem = ({ children, tooltipsText, position }) => {
     <div className="w-full px-4 sm:w-1/2 lg:w-1/4">
       <div className="mb-14">
         <div className="group relative inline-block">
-          <button className="inline-flex rounded bg-primary px-[18px] py-2 text-base font-semibold text-white">
+          <button
+            type={"button"}
+            className="inline-flex rounded bg-primary px-[18px] py-2 text-base font-semibold text-white">
             {children}
           </button>
           <div
