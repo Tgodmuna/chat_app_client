@@ -52,7 +52,10 @@ const NavigationIcons: React.FC = () => {
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "userMd" ? " text-green-500 scale-125 transition-all duration-200" : ""
           }`}
-          onClick={() => handleIconClick("userMd")}
+          onClick={() => {
+            handleIconClick("userMd");
+            layoutContext?.setShowFriends(true);
+          }}
         />
         <FaRegHeart
           title={"favorites"}
