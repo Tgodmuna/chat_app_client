@@ -104,7 +104,7 @@ export async function handleSubmit(
     console.log(error);
     setIsError(true);
     setIsloading(false);
-    SetErrorMsg(error.response.data || error.message || "An error occurred");
+    SetErrorMsg(error?.response?.data || error?.message || "An error occurred");
   }
 }
 const validate: (data: loginformDataType) => boolean | string = (data) => {
