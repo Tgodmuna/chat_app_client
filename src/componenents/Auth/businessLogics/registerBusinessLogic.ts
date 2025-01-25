@@ -19,7 +19,8 @@ export const handleSubmit: FormSubmitHandlerType = async (
   errorMsgSetter,
   errorSetter,
   SuccessMsgSetter,
-  SetSuccessMessage
+  SetSuccessMessage,
+  navigate
 ) => {
   // Reset state and error flags
   stateSetter(state);
@@ -39,20 +40,20 @@ export const handleSubmit: FormSubmitHandlerType = async (
 
     // Post the data after successful validation
     const result = await axios.post<{ data: any }>(
-      "https://example.com/api/endpoint", // Replace with a valid URL
+      "http://localhost:7000/api/auth/register",
       formData
     );
 
-    if (result.status === 200) {
+    if (result.status === 201) {
       SuccessMsgSetter("Registered successfully");
       SetSuccessMessage(true);
 
-      // Navigate user to dashboard
-      // (implement navigation logic here)
+      // Navigate user to login to dashboard
+      navigate("/login");
     }
   } catch (error: any) {
     // Enhanced error handling
-    const errorMessage = error.response?.data?.message || error.message || "An error occurred";
+    const errorMessage = error.response?.data || error.message || "An error occurred";
     errorSetter(true);
     errorMsgSetter(errorMessage);
     console.error("Request failed:", error);
@@ -68,13 +69,17 @@ export const validationHandler = (formData: newUserFormData) => {
       .string()
       .required()
       .regex(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/),
-    password: joi
-      .string()
-      .min(8)
-      .required()
-      .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+    password: joi.string().min(8).required(),
     phone: joi.number().optional(),
-    location: joi.string().optional(),
+    location: {
+      city: joi.string(),
+      state: joi.string(),
+      country: joi.string(),
+    },
+    gender: joi.string().valid("male", "female", "other"),
+    status: joi.string(),
+    age: joi.number(),
+    role: joi.string().valid("user", "admin"),
   });
 
   // Validate and return
