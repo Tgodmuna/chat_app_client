@@ -16,7 +16,13 @@ const Authenticator: React.FC<{ token: string | null; children: React.ReactNode 
 
   return (
     <>
-      {isAuthenticated ? children : <h1 className={`text-red-500 text-4xl`}>Not Authenticated</h1>}
+      {isAuthenticated ? (
+        children
+      ) : (
+        <h1 className={`text-red-500 text-center animate-pulse m-auto text-4xl`}>
+          Not Authenticated, Login or register
+        </h1>
+      )}
     </>
   );
 };
