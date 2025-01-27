@@ -18,11 +18,14 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId }) => {
     // Fetch initial messages
     const fetchMessages = async () => {
       try {
-        const response = await axios.get(`/api/conversations/${conversationId}/messages`, {
-          headers: {
-            "x-auth-token": token,
-          },
-        });
+        const response = await axios.get(
+          `http://localhost:7000/api/conversations/${conversationId}/messages`,
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
         setMessages(response.data);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -32,8 +35,8 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId }) => {
     fetchMessages();
   }, [conversationId, token]);
 
+  // Set up WebSocket connection
   useEffect(() => {
-    // Set up WebSocket connection
     socket.current = new WebSocket(`ws://localhost:7000?token=${token}`);
 
     socket.current.onopen = () => {
@@ -58,8 +61,8 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId }) => {
     };
   }, [token]);
 
+  // Scroll to the bottom of the messages
   useEffect(() => {
-    // Scroll to the bottom of the messages
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -102,6 +105,7 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
+
       <form
         onSubmit={handleSendMessage}
         className="message-form">
