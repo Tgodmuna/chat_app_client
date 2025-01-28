@@ -5,27 +5,31 @@ import { UseFetchToken } from "../hooks/UseFetchToken.ts";
 
 type MessageProps = {
   conversationId: string;
+  recipientID: string;
 };
 
-const MessageComponent: React.FC<MessageProps> = ({ conversationId }) => {
+const MessageComponent: React.FC<MessageProps> = ({ conversationId, recipientID }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const token = UseFetchToken();
   const socket = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // Fetch initial messages on component mount
+  //-after fetching, set the message to the message useState.
+  //-any time,token or conversationId changes.it refetch the messgage again.
   useEffect(() => {
-    // Fetch initial messages
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/conversations/${conversationId}/messages`,
+          `http://localhost:7000/api/messages/message/${conversationId}?page=1&limit=2`,
           {
             headers: {
               "x-auth-token": token,
             },
           }
         );
+        console.log(response.data);
         setMessages(response.data);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -70,23 +74,9 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId }) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const messageData = {
-      content: newMessage,
-      conversationId,
-    };
-
     try {
-      const response = await axios.post(
-        `/api/conversations/${conversationId}/messages`,
-        messageData,
-        {
-          headers: {
-            "x-auth-token": token,
-          },
-        }
-      );
+      socket.current?.send(JSON.stringify({ recipientID, content: newMessage, type: "direct" }));
 
-      socket.current?.send(JSON.stringify(response.data));
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
