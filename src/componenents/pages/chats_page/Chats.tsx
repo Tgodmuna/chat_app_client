@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect, type ChangeEvent, useContext } from "react";
+import React, { useState, useEffect, type ChangeEvent, useContext, useRef } from "react";
 import type { Conversation, Endpoint } from "../../../types";
 import { FaRegMessage, FaRegSquarePlus } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
@@ -8,11 +8,13 @@ import { MdPerson3 } from "react-icons/md";
 import { LayoutContext } from "./Layout.tsx";
 import { UseFetchToken } from "../../hooks/UseFetchToken.ts";
 import Message from "../Messages.tsx";
+import { AppContext } from "../../../App.tsx";
 
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
   const [selectedChat, setSelectedChat] = useState<null | Conversation>(null);
   const token: string | null = UseFetchToken();
+  const recipientID = useRef<null | string>(null);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -23,14 +25,7 @@ const Chats: React.FC = () => {
 
         const endpoints: Endpoint[] = [
           {
-            url: "http://localhost:7000/api/conversations",
-            headers: {
-              "x-auth-token": token,
-              "content-type": "application/json",
-            },
-          },
-          {
-            url: "http://localhost:7000/api/messages",
+            url: "http://localhost:7000/api/conversations/conversations",
             headers: {
               "x-auth-token": token,
               "content-type": "application/json",
@@ -43,6 +38,7 @@ const Chats: React.FC = () => {
         );
 
         if (!response) throw new Error("No response from server");
+        console.log(response);
 
         setChats(response[0].data.chats);
       } catch (error) {
@@ -54,24 +50,33 @@ const Chats: React.FC = () => {
   }, [token]);
 
   const layoutContext = useContext(LayoutContext);
+  const appContext = useContext(AppContext);
 
-  const handleChatClick = (chat: Conversation) => {
+  //chat selection handler
+  const handleChatClick = (chat: Conversation, recipient: string) => {
     setSelectedChat(chat);
+    recipientID.current = recipient;
   };
 
+  //conversation list
+  //-this will list all the conversations user involved in.
+  //-it will also enable selection of a single chat and use its id to fetch related messages
   const conversations = chats?.map((chat) => {
     const lastMessage = chat.lastMessage;
 
     const profilePicturePath = chat.participants.find(
-      (participant) => participant._id !== "id"
+      (participant) => participant._id === appContext?._id
     )?.profilePicture;
 
-    const MessageSender = chat.participants.find((participant) => participant._id !== "id")?.name;
+    //this is the person who sent the message
+    const MessageSender = chat.participants.find(
+      (participant) => participant._id !== appContext?._id
+    );
 
     return (
       <div
         key={chat._id}
-        onClick={() => handleChatClick(chat)}
+        onClick={() => MessageSender && handleChatClick(chat, MessageSender._id)}
         className={`flex flex-row items-center justify-between w-full p-1 rounded-xl bg-white shadow-md cursor-pointer`}>
         <div
           className={`flex justify-between items-center w-full bg-slate-300  p-4 border border-b-0 border-gray-600 `}>
@@ -87,7 +92,7 @@ const Chats: React.FC = () => {
             )}
 
             <div className="flex flex-col items-center justify-center gap-3">
-              <h1 className={`text-black`}> {MessageSender}</h1>
+              <h1 className={`text-black`}> {MessageSender?.name}</h1>
               <p className={`text-sm italic text-neutral-400 m-auto`}>{lastMessage?.content}</p>
             </div>
           </div>
@@ -110,7 +115,10 @@ const Chats: React.FC = () => {
       <Search chats={chats} />
       {selectedChat ? (
         <div className="selected-chat-container">
-          <Message conversationId={selectedChat._id} />
+          <Message
+            recipientID={recipientID.current ?? ""}
+            conversationId={selectedChat._id}
+          />
         </div>
       ) : (
         conversations
