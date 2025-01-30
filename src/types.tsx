@@ -71,6 +71,7 @@ export type loginformDataType = {
 };
 
 export type userDataType = newUserFormData & {
+  _id: string;
   profilePicture: string | null;
   bio: string | null;
   interest: string | null;
