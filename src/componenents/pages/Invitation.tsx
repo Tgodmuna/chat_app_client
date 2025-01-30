@@ -1,20 +1,25 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 const AddFriendInvitation: React.FC = () => {
   const [email, setEmail] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
-      alert("Please enter an email address.");
-      return;
+    try {
+      if (!email.trim()) {
+        alert("Please enter an email address.");
+        return;
+      }
+      await axios.post("http://localhost:7000/api/friend/send-invitation");
+
+      alert(`Invitation sent to: ${email}`);
+      setEmail("");
+      setIsOpen(false);
+    } catch (err) {
+      alert(err.message);
     }
-    alert(`Invitation sent to: ${email}\nMessage: ${message}`);
-    setEmail("");
-    setMessage("");
-    setIsOpen(false);
   };
 
   return (
@@ -34,9 +39,6 @@ const AddFriendInvitation: React.FC = () => {
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-4">
-                <form
-                  onSubmit={handleSubmit}
-                  className="flex flex-col gap-4"></form>
                 <input
                   type="email"
                   value={email}
@@ -44,16 +46,11 @@ const AddFriendInvitation: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="border p-2 rounded"
                 />
-                <textarea
-                  value={message}
-                  placeholder="Invitation message"
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="border p-2 rounded"
-                />
+
                 <button
                   type="submit"
                   className="mt-2 flex gap-2 items-center bg-blue-500 text-white p-2 rounded">
-                  Submit
+                  send
                 </button>
               </form>
             </div>
