@@ -40,7 +40,7 @@ type Participant = {
   name: string;
 };
 
-type Message = {
+export type Message = {
   id: string;
   content: string;
   sender: Participant;
@@ -71,6 +71,7 @@ export type loginformDataType = {
 };
 
 export type userDataType = newUserFormData & {
+  _id: string;
   profilePicture: string | null;
   bio: string | null;
   interest: string | null;
