@@ -4,7 +4,7 @@ import type { Message } from "../../types.tsx";
 import { UseFetchToken } from "../hooks/UseFetchToken.ts";
 
 type MessageProps = {
-  conversationId: string;
+  conversationId?: string;
   recipientID: string;
 };
 
