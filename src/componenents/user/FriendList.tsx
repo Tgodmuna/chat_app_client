@@ -10,6 +10,7 @@ import Search from "./friends-related/Search.tsx";
 import DiscoverPeople from "./friends-related/DiscoverPeople.tsx";
 import { LayoutContext } from "../pages/chats_page/Layout.tsx";
 import FriendRequest from "./friends-related/FriendRequest.tsx";
+import MessageComponent from "../pages/Messages.tsx";
 
 const FriendList: FC = React.memo(() => {
   const [listOfFriends, setList] = useState<friendListType>([]);
@@ -48,7 +49,8 @@ const FriendList: FC = React.memo(() => {
     fetchFriendsList();
   }, [token]);
 
-  if (loading) return <p className={`text-center text-xl text-neutral-600`}>Loading friends...</p>;
+  if (loading)
+    return <p className={`text-center m-auto text-xl text-neutral-600`}>Loading friends...</p>;
 
   return (
     <div
@@ -64,6 +66,7 @@ const FriendList: FC = React.memo(() => {
         />
       )}
       <Search data={listOfFriends} />
+
       {/* list all user friends */}
       {listOfFriends.length > 0 ? (
         listOfFriends.map((friend, index) => (
@@ -75,6 +78,7 @@ const FriendList: FC = React.memo(() => {
       ) : (
         <p className="text-gray-500">No friends found.</p>
       )}
+
       {/* discover people */}
       {token && showDiscoverPeople && (
         <DiscoverPeople
@@ -92,31 +96,75 @@ export default FriendList;
 
 // Friend Item Component
 const FriendItem: FC<{ friend: userDataType }> = React.memo(({ friend }) => {
+  const [startMessage, SetStartMessage] = useState<boolean>(false);
+  const [showPopOver, setShowPopOver] = useState<boolean>(false);
+
+  //handler to initiate a chat with a friend
+  const InitiateChat = () => SetStartMessage((prev) => !prev);
+
   return (
-    <div className="flex items-center justify-between w-full p-2 bg-gray-200 rounded-md">
-      <div className="flex items-center gap-3">
-        {friend.profilePicture ? (
-          <img
-            src={friend.profilePicture}
-            alt={`${friend.name}'s avatar`}
-            className="w-10 h-10 rounded-full"
-          />
-        ) : (
-          <div className="flex items-center justify-center w-10 h-10 bg-gray-300 rounded-full">
-            AV
+    //  on each user start, start a new chat or previous one
+    startMessage ? (
+      <MessageComponent recipientID={friend._id} />
+    ) : (
+      <div
+        className="flex items-center justify-between w-full p-2 bg-gray-200 rounded-md"
+        onClick={() => {
+          InitiateChat();
+        }}>
+        {/* friend info */}
+        <div className="flex items-center gap-3">
+          {/* user avatar or profile image */}
+          {friend.profilePicture ? (
+            <img
+              src={friend.profilePicture}
+              alt={`${friend.name}'s avatar`}
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-10 h-10 bg-gray-300 rounded-full">
+              AV
+            </div>
+          )}
+
+          <div>
+            <p className="text-lg font-bold text-gray-700">
+              {friend.username} <span className="text-sm text-gray-500">({friend.name})</span>
+            </p>
+            <Dots
+              className={`size-1 rounded-full p-[1px] absolute`}
+              isOnline={friend.isOnline}
+            />
           </div>
-        )}
-        <div>
-          <p className="text-lg font-bold text-gray-700">
-            {friend.username} <span className="text-sm text-gray-500">({friend.name})</span>
-          </p>
-          <Dots
-            className={`size-1 rounded-full p-[1px] absolute`}
-            isOnline={friend.isOnline}
-          />
         </div>
+
+        {/* Popover for more options */}
+        <>
+          <div className="relative">
+            <button
+              title="More options"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPopOver((prev) => !prev);
+              }}
+              className="focus:outline-none">
+              <CgMoreVertical className="text-xl text-gray-500" />
+            </button>
+
+            {/* Popover content */}
+            <div
+              className={`absolute ${
+                showPopOver ? "inline-block" : "hidden"
+              } right-0 mt-2 w-48 bg-green-400 border border-gray-200 rounded-md shadow-lg z-10`}>
+              <ul className="py-1">
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">View Profile</li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Send Message</li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Remove Friend</li>
+              </ul>
+            </div>
+          </div>
+        </>
       </div>
-      <CgMoreVertical className="text-xl text-gray-500" />
-    </div>
+    )
   );
 });
