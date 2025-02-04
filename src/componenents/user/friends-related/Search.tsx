@@ -25,7 +25,7 @@ const Search: FC<{ data: friendListType }> = React.memo(({ data }) => {
   };
 
   return (
-    <div className="w-full px-4 py-6 bg-gray-50 rounded-lg shadow-md">
+    <>
       <input
         type="text"
         placeholder="Search friends..."
@@ -47,7 +47,7 @@ const Search: FC<{ data: friendListType }> = React.memo(({ data }) => {
         ) : (
           <p className="text-gray-500 mt-2">No results found.</p>
         ))}
-    </div>
+    </>
   );
 });
 
