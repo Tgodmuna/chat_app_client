@@ -17,10 +17,16 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId, recipientID 
 
   // Fetch initial messages on component mount
   //-after fetching, set the message to the message useState.
-  //-any time,token or conversationId changes.it refetch the messgage again.
+  //-any time token or conversationId changes.it refetch the messgage again.
   useEffect(() => {
     const fetchMessages = async () => {
       try {
+        if (!conversationId) {
+          console.info("no conversation id passed, ");
+          console.info("it means a new chat,returning......");
+          return;
+        }
+
         const response = await axios.get(
           `http://localhost:7000/api/messages/message/${conversationId}?page=1&limit=2`,
           {
@@ -29,7 +35,7 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId, recipientID 
             },
           }
         );
-        console.log(response.data);
+        console.log("fetched messages", response.data);
         setMessages(response.data);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -70,6 +76,7 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId, recipientID 
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  //send message handler
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -84,15 +91,21 @@ const MessageComponent: React.FC<MessageProps> = ({ conversationId, recipientID 
   };
 
   return (
-    <div className="message-container">
+    <div className="message-container bg-green-200 ">
       <div className="messages">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className="message">
-            <p>{message.content}</p>
-          </div>
-        ))}
+        {messages.length > 0 ? (
+          messages.map((message) => (
+            <div
+              key={message.id}
+              className="message">
+              <p>{message.content}</p>
+            </div>
+          ))
+        ) : (
+          <p className={`text-neutral-600 text-lg text-center m-auto `}>
+            send a message to start conversation
+          </p>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
