@@ -65,7 +65,7 @@ const Chats: React.FC = () => {
     const lastMessage = chat.lastMessage;
 
     const profilePicturePath = chat.participants.find(
-      (participant) => participant._id === appContext?._id
+      (participant) => participant._id !== appContext?._id
     )?.profilePicture;
 
     //this is the person who sent the message
@@ -159,7 +159,7 @@ const Header: React.FC = () => {
 };
 
 //search component
-export const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
+ const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
   const [SearchData, setSearchData] = useState<null | string>(null);
   const [searchResult, setSearchResult] = useState<Conversation[] | null>(null);
   const [CHATS] = useState<undefined | typeof chats>(chats);
