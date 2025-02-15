@@ -2,19 +2,22 @@ import axios from "axios";
 import React from "react";
 import { useContext, useEffect, useState, type FC } from "react";
 import { CgMoreVertical } from "react-icons/cg";
-import { FaTimes, FaUserPlus } from "react-icons/fa";
+import { FaArrowAltCircleLeft, FaUserPlus } from "react-icons/fa";
 import { AppContext } from "../../../App.tsx";
 import type { userDataType } from "../../../types.tsx";
 import SuccessToast from "../../utils/SuccessToast.tsx";
+import { useNavigate } from "react-router-dom";
+import { FriendComponentContext } from "./Friends.tsx";
 
 const DiscoverPeople: FC<{
   token: string;
-  SetshowDiscoverPeople: React.Dispatch<React.SetStateAction<boolean>>;
-}> = React.memo(({ token, SetshowDiscoverPeople }) => {
+}> = React.memo(({ token }) => {
   const [users, setUsers] = useState<userDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const userID = useContext(AppContext)?._id;
+  const navigate = useNavigate();
+  const friendComponentContext = useContext(FriendComponentContext);
 
   // Fetch users on component mount
   useEffect(() => {
@@ -53,10 +56,13 @@ const DiscoverPeople: FC<{
     <div className="p-6 bg-gray-100 w-full min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-semibold text-gray-800">Discover People</h2>
-        <FaTimes
-          onClick={() => SetshowDiscoverPeople(false)}
+        <FaArrowAltCircleLeft
+          onClick={() => {
+            friendComponentContext?.toggleOnOutlet((prev) => !prev);
+            navigate("/dashboard/friends");
+          }}
           title="Close"
-          className="text-3xl text-gray-400 hover:text-red-500 cursor-pointer"
+          className="text-3xl text-gray-400 hover:text-gray-500 hover:bg-white cursor-pointer transition-all hover:scale-110"
         />
       </div>
 
