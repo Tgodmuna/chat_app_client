@@ -1,184 +1,131 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
-import type { Message } from "../../types.tsx";
 import { UseFetchToken } from "../hooks/UseFetchToken.ts";
 import { FaVideo } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
 import { CgMoreVertical } from "react-icons/cg";
+import { useLocation } from "react-router-dom";
+import { AppContext } from "../../App.tsx";
 
-export type userInfoProp = {
-  _id: string | undefined;
-  profilePicture: string | null | undefined;
-  isOnline: boolean | undefined;
-  lastSeen: Date | undefined;
-  username: string | undefined;
-};
-type MessageProps = {
-  conversationId?: string;
-  recipientID: string;
-  userInfo: userInfoProp;
-};
-
-const MessageComponent: React.FC<MessageProps> = ({ conversationId, recipientID, userInfo }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState<string>("");
+const MessageComponent = () => {
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
   const token = UseFetchToken();
-  const socket = useRef<WebSocket | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const socket = useRef(null);
+  const messagesEndRef = useRef(null);
+  const clientInfo = useContext(AppContext);
+  const location = useLocation();
+  const { conversationId, recieverInfo } = location.state;
 
-  console.log(userInfo);
-
-  // Fetch initial messages on component mount
-  //-after fetching, set the message to the message useState.
-  //-any time token or conversationId changes.it refetch the messgage again.
   useEffect(() => {
-    const fetchMessages = async () => {
+    async function fetchMessages() {
       try {
-        if (!conversationId) {
-          console.info("no conversation id passed, ");
-          console.info("it means a new chat,returning......");
-          return;
-        }
-
         const response = await axios.get(
-          `http://localhost:7000/api/messages/message/${conversationId}?page=1&limit=2`,
-          {
-            headers: {
-              "x-auth-token": token,
-            },
-          }
+          `http://localhost:7000/api/messages/${conversationId}?page=1&limit=10`,
+          { headers: { "x-auth-token": token } }
         );
-        console.log("fetched messages", response.data);
         setMessages(response.data);
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error("Error fetching messages", error);
       }
-    };
-
-    fetchMessages();
+    }
+    if (conversationId) fetchMessages();
   }, [conversationId, token]);
 
-  // Set up WebSocket connection
   useEffect(() => {
     socket.current = new WebSocket(`ws://localhost:7000?token=${token}`);
 
-    socket.current.onopen = () => {
-      console.log("Connected to WebSocket server");
-    };
-
     socket.current.onmessage = (event) => {
-      const message: Message = JSON.parse(event.data);
+      const message = JSON.parse(event.data);
       setMessages((prevMessages) => [...prevMessages, message]);
     };
 
-    socket.current.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    socket.current.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    return () => {
-      socket.current?.close();
-    };
+    return () => socket.current?.close();
   }, [token]);
 
-  // Scroll to the bottom of the messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  //send message handler
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    try {
-      socket.current?.send(JSON.stringify({ recipientID, content: newMessage, type: "direct" }));
+    const message = {
+      content: newMessage,
+      sender: { _id: clientInfo?._id },
+      reciever: { _id: recieverInfo._id },
+      createdAt: new Date().toISOString(),
+      read: false,
+      delivered: true,
+      conversationID: conversationId,
+    };
 
+    try {
+      socket.current?.send(
+        JSON.stringify({ recipientID: recieverInfo._id, content: newMessage, type: "direct" })
+      );
+      setMessages((prevMessages) => [...prevMessages, message]);
       setNewMessage("");
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending message", error);
     }
   };
 
   return (
-    <div className={`flex flex-col justify-center items-center w-full`}>
-      <header className={`flex   justify-between items-center border-b-2 border-b-slate-400 `}>
-        <div className={`flex  items-center justify-center h-full gap-2 w-full`}>
-          <img
-            className={`rounded-full object-contain size-[3.5rem] p-2 border-2 shadow-sm border-slate-500`}
-            src={userInfo?.profilePicture ?? "lklk"}
-            alt={userInfo?.username}
-          />
-          {/* username and  status */}
-          <div
-            className={`flex border-1 border-t-0 border-x-0 border-yellow-400 flex-col max-w-[15rem] gap-2 items-start justify-center `}>
-            <p className={"font-bold text-lg"}>{userInfo.username}</p>
-            {/*NOTE: remember to improve status later for realtime update */}
-            <p
-              className={`italic text-xs ${
-                userInfo.isOnline ? "text-green-500" : "text-orange-400"
-              }`}>
-              {userInfo.isOnline ? "online" : `offline:${userInfo.lastSeen}`}
+    <div className="flex flex-col h-screen">
+      <header className="flex justify-between items-center p-4 border-b">
+        <div className="flex items-center gap-4">
+          <img src={recieverInfo?.profilePicture || "default.png"} alt={recieverInfo?.username} className="rounded-full w-10 h-10" />
+          <div>
+            <p className="font-bold text-lg">{recieverInfo.username}</p>
+            <p className="text-sm text-gray-400">
+              {recieverInfo.isOnline ? "Online" : `Last seen: ${new Date(recieverInfo.lastSeen).toLocaleString()}`}
             </p>
           </div>
         </div>
-
-        <div
-          className={`flex justify-between items-center w-[10rem] h-full hover:bg-slate-200 cursor-pointer`}>
-          <FaVideo
-            title={"video chat"}
-            className={`messageIcon`}
-          />
-          <FaPhone
-            title={"call"}
-            className={`messageIcon`}
-          />
-          <CgMoreVertical
-            title={"more optons"}
-            className={`messageIcon`}
-          />
+        <div className="flex gap-3">
+          <FaVideo className="cursor-pointer" />
+          <FaPhone className="cursor-pointer" />
+          <CgMoreVertical className="cursor-pointer" />
         </div>
       </header>
 
-      {/* message body */}
-      <div className="message-container bg-green-200 ">
-        <div className="messages">
-          {messages.length > 0 ? (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className="message">
-                <p>{message.content}</p>
+      <div className="flex flex-col flex-grow p-4 overflow-y-auto">
+        {messages.length === 0 ? (
+          <p className="text-gray-500 text-center">No messages yet</p>
+        ) : (
+          messages.map((message, index) => (
+            <div
+              key={index}
+              className={`max-w-xs p-3 my-2 rounded-lg ${
+                message.sender._id === clientInfo._id
+                  ? "self-end bg-blue-500 text-white"
+                  : "self-start bg-gray-300"
+              }`}>
+              <p className="text-sm">{message.content}</p>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{new Date(message.createdAt).toLocaleString()}</span>
+                <span>{message.read ? "✓✓" : message.delivered ? "✓" : ""}</span>
               </div>
-            ))
-          ) : (
-            <p className={`text-neutral-600 text-lg text-center m-auto `}>
-              send a message to start conversation
-            </p>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        <form
-          onSubmit={handleSendMessage}
-          className="message-form">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="message-input"
-          />
-          <button
-            type="submit"
-            className="send-button">
-            Send
-          </button>
-        </form>
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
       </div>
+
+      <form onSubmit={handleSendMessage} className="flex items-center p-4 border-t">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          className="flex-grow p-2 border rounded-lg"
+          placeholder="Type a message..."
+        />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+          Send
+        </button>
+      </form>
     </div>
   );
 };
