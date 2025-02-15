@@ -1,18 +1,19 @@
 import axios from "axios";
-import { useContext, useState, useCallback, useEffect } from "react";
-import { FaTimes } from "react-icons/fa";
+import { useState, useCallback, useEffect, useContext } from "react";
+import { FaArrowAltCircleLeft } from "react-icons/fa";
 import { FaRegSquarePlus } from "react-icons/fa6";
 import { MdOutlineNotificationAdd } from "react-icons/md";
 import React from "react";
-import { LayoutContext } from "../../pages/chats_page/Layout.tsx";
+import { useNavigate } from "react-router-dom";
+import { FriendComponentContext } from "./Friends.tsx";
 
 const Header: React.FC<{
   token: string;
-  SetshowDiscoverPeople: React.Dispatch<React.SetStateAction<boolean>>;
-  setshowFriendRequest: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ SetshowDiscoverPeople, setshowFriendRequest, token }) => {
-  const layoutContext = useContext(LayoutContext);
+}> = ({ token }) => {
   const [friendRequestCount, SetfriendRequestCount] = useState<number>(0);
+  const friendComponentContext = useContext(FriendComponentContext);
+
+  const navigate = useNavigate();
 
   const fetchFriendRequests = useCallback(async () => {
     try {
@@ -50,7 +51,10 @@ const Header: React.FC<{
       <div className="flex flex-row items-center gap-3">
         {/* Discover Friends Button */}
         <button
-          onClick={() => SetshowDiscoverPeople(true)}
+          onClick={() => {
+            navigate("/dashboard/friends/discover_people");
+            friendComponentContext?.toggleOnOutlet((prev) => !prev);
+          }}
           title="Discover Friends"
           className="flex items-center gap-1 px-3 py-2 bg-green-400 text-white rounded-lg hover:bg-blue-600 transition">
           <FaRegSquarePlus className="text-white" />
@@ -59,7 +63,10 @@ const Header: React.FC<{
 
         {/* Friend Request Notification */}
         <div
-          onClick={() => setshowFriendRequest(true)}
+          onClick={() => {
+            navigate("/dashboard/friends/friendRequest");
+            friendComponentContext?.toggleOnOutlet((prev) => !prev);
+          }}
           title="Friend Request"
           className="relative hover:scale-95  cursor-pointer">
           <MdOutlineNotificationAdd className="text-3xl text-green-400" />
@@ -72,10 +79,10 @@ const Header: React.FC<{
 
         {/* Back Button */}
         <button
-          onClick={() => layoutContext?.setShowFriends(false)}
+          onClick={() => navigate("/dashboard/friends")}
           title="Go Back"
-          className="flex items-center px-3 py-2 bg-slate-200 rounded-lg hover:bg-gray-300 transition">
-          <FaTimes className="text-gray-700" />
+          className="flex items-center px-3 py-2 bg-slate-200 rounded-lg hover:bg-gray-300   transition-all duration-300 hover:scale-110">
+          <FaArrowAltCircleLeft className="" />
         </button>
       </div>
     </div>
