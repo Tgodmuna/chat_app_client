@@ -1,24 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import SideBar from "./SideBar.tsx";
 import ChatBG from "./ChatBackground.tsx";
-import Chats from "./Chats.tsx";
 import type { LayoutContextType } from "../../../types.tsx";
-import FriendList from "../../user/FriendList.tsx";
+import { Outlet } from "react-router-dom";
 
 export const LayoutContext = React.createContext<null | LayoutContextType>(null);
 const Layout = () => {
-  const [showChats, setShowChats] = useState<boolean>(false);
-  const [showFriends, setShowFriends] = useState<boolean>(false);
-
   return (
-    <LayoutContext.Provider value={{ showChats, setShowChats, showFriends, setShowFriends }}>
-      <div className={`flex w-full overflow max-w-full h-[100vw]`}>
+    <LayoutContext.Provider value={{}}>
+      <div className={` parent flex w-[100vw] md:w-full `}>
         <SideBar />
         <ChatBG />
 
-        {/* other pages */}
-        <Chats />
-        <FriendList />
+        <Outlet />
       </div>
     </LayoutContext.Provider>
   );
