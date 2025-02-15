@@ -1,8 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { FaSignOutAlt, FaUserMd } from "react-icons/fa";
 import { FaGears, FaRegHeart, FaRegMessage, FaUserPen } from "react-icons/fa6";
-import type { LayoutContextType } from "../../../types.ts";
-import { LayoutContext } from "./Layout.tsx";
+import { useNavigate } from "react-router-dom";
 
 /**
  * NavigationIcons component renders a vertical navigation bar with icons.
@@ -29,8 +28,7 @@ const NavigationIcons: React.FC = () => {
   const handleIconClick = (iconName: string) => {
     setActiveIcon(iconName);
   };
-  const context = LayoutContext;
-  let layoutContext = useContext<LayoutContextType | null>(context);
+  let navigate = useNavigate();
 
   return (
     <div className="flex flex-col size-full justify-between text-neutral-700">
@@ -43,7 +41,7 @@ const NavigationIcons: React.FC = () => {
             activeIcon === "message" ? "text-green-500 scale-125 transition-all duration-200" : ""
           }`}
           onClick={() => {
-            layoutContext?.setShowChats(true);
+            navigate("/dashboard/chats");
             handleIconClick("message");
           }}
         />
@@ -55,7 +53,6 @@ const NavigationIcons: React.FC = () => {
           onClick={() => {
             navigate("/dashboard/friends");
             handleIconClick("userMd");
-            layoutContext?.setShowFriends(true);
           }}
         />
         <FaRegHeart
@@ -63,10 +60,14 @@ const NavigationIcons: React.FC = () => {
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "heart" ? " text-green-500 scale-125 transition-all duration-200 " : ""
           }`}
-          onClick={() => handleIconClick("heart")}
+          onClick={() => {
+            handleIconClick("heart");
+            navigate("/dashboard/favorites");
+          }}
         />
       </div>
 
+      {/* second child */}
       <div
         className={`flex items-center w-full text-2xl justify-between flex-col h-[15rem] bg-green-200 p-3 rounded-xl`}>
         <FaUserPen
