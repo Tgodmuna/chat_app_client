@@ -34,20 +34,40 @@ export type FormSubmitHandlerType = (
 ) => Promise<void>;
 
 //.........................:chats types
-type Participant = {
-  _id: string;
-  profilePicture: string;
-  name: string;
+export type Participant = {
+  _id: string | undefined;
+  profilePicture: string | undefined | null;
+  name: string | undefined;
+  username: string | undefined;
+  isOnline: boolean | undefined;
+  lastSeen: Date | undefined;
 };
 
 export type Message = {
-  id: string;
-  content: string;
-  sender: Participant;
-  timestamp: Date;
+  id: string | undefined;
+  content: string | undefined;
+  sender: Participant | undefined;
+  reciever: Participant | undefined;
+  updatedAt: Date | undefined;
+  createdAt: Date | undefined;
+  read: boolean | undefined;
+  delivered: boolean | undefined;
+  isEdited: boolean | undefined;
+  conversationID: string | undefined;
   [key: string]: any;
 };
 
+export type newMessage = {
+  content: string | undefined;
+  sender: { _id: string } | undefined;
+  reciever: { _id: string } | undefined;
+  updatedAt: Date | undefined;
+  timestamp: Date | undefined;
+  read: boolean | undefined;
+  delivered: boolean | undefined;
+  isEdited: boolean | undefined;
+  conversationID: string | undefined;
+};
 export type Conversation = {
   _id: string;
   type: "direct" | "group";
@@ -85,9 +105,4 @@ export type userDataType = newUserFormData & {
 export type friendListType = userDataType[];
 
 // ...................: layout context type
-export type LayoutContextType = {
-  showChats: boolean;
-  setShowChats: React.Dispatch<React.SetStateAction<boolean>>;
-  showFriends: boolean;
-  setShowFriends: React.Dispatch<React.SetStateAction<boolean>>;
-};
+export type LayoutContextType = {};
