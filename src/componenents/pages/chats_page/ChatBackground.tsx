@@ -15,7 +15,7 @@ import { FaRegComments } from "react-icons/fa6";
  */
 const ChatBG: React.FC = (): JSX.Element => {
   return (
-    <div className="flex items-center justify-center h-[100vh] w-full bg-gray-200">
+    <div className="flex absolute -z-50 items-center justify-center h-[100vh] w-full bg-gray-200">
       <div className="text-center flex flex-col items-center justify-center text-wrap">
         <FaRegComments
           size={100}

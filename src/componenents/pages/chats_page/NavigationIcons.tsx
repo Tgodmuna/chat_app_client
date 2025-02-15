@@ -53,6 +53,7 @@ const NavigationIcons: React.FC = () => {
             activeIcon === "userMd" ? " text-green-500 scale-125 transition-all duration-200" : ""
           }`}
           onClick={() => {
+            navigate("/dashboard/friends");
             handleIconClick("userMd");
             layoutContext?.setShowFriends(true);
           }}
