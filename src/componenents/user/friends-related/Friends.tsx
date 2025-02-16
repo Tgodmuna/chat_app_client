@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import FriendList from "../FriendList.tsx";
+import FriendList from "./FriendList.tsx";
 
 export const FriendComponentContext = React.createContext<{
   toggleOnOutlet: React.Dispatch<React.SetStateAction<boolean>>;
