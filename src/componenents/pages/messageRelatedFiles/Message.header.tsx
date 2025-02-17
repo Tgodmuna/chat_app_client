@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaVideo, FaPhone } from "react-icons/fa6";
 import { CgMoreVertical } from "react-icons/cg";
 
@@ -12,8 +12,35 @@ type HeaderProps = {
 };
 
 const MessageHeader: React.FC<HeaderProps> = ({ recieverInfo }) => {
+  const [showPopover, setShowPopover] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  console.log(recieverInfo);
+
+  const togglePopover = () => {
+    setShowPopover(!showPopover);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+      setShowPopover(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showPopover) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPopover]);
+
   return (
-    <header className="flex justify-between items-center p-4 border-b">
+    <header className="flex justify-between items-center p-4 border-b relative">
       <div className="flex items-center gap-4">
         <img
           src={recieverInfo?.profilePicture || "default.png"}
@@ -32,10 +59,24 @@ const MessageHeader: React.FC<HeaderProps> = ({ recieverInfo }) => {
       <div className="flex gap-3">
         <FaVideo className="cursor-pointer" />
         <FaPhone className="cursor-pointer" />
-        <CgMoreVertical className="cursor-pointer" />
+        <CgMoreVertical
+          className="cursor-pointer"
+          onClick={togglePopover}
+        />
+        {showPopover && (
+          <div
+            ref={popoverRef}
+            className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
+            <ul>
+              <li className="p-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+              <li className="p-2 hover:bg-gray-100 cursor-pointer">Block</li>
+              <li className="p-2 hover:bg-gray-100 cursor-pointer">Delete</li>
+            </ul>
+          </div>
+        )}
       </div>
     </header>
   );
 };
 
-export default MessageHeader;
+export default React.memo(MessageHeader);
