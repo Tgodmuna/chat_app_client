@@ -128,10 +128,10 @@ const FriendItem: FC<{ friend: userDataType }> = React.memo(({ friend }) => {
               {!friend.bio ? " busy" : friend.bio}
             </span>
           </p>
-          {/* <span
-              className={`size-[5px] rounded-full  relative right-[10px] p-2 left-0 top-0 ${
-                friend.isOnline ? "bg-green-400" : "bg-orange-600"
-              }`}></span> */}
+            <span
+            className={`w-[10px] h-[10px] rounded-full absolute left-[-15px] top-[5px] ${
+              friend.isOnline ? "bg-green-400" : "bg-orange-600"
+            }`}></span>
         </div>
       </div>
 
