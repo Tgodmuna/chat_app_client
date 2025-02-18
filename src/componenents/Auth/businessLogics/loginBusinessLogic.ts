@@ -93,8 +93,8 @@ export async function handleSubmit(
       const token = result.data.token;
       sessionStorage.setItem("token", token);
 
-      //serialized and save user data to localstorage
-      localStorage.setItem("UserData", JSON.stringify(result.data.user));
+      //serialized and save user data to sessionStorage
+      sessionStorage.setItem("UserData", JSON.stringify(result.data.user));
 
       //navigate to the dashboard
       navigate("/dashboard");
