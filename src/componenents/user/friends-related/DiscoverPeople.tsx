@@ -191,4 +191,4 @@ const UserCard: FC<{ user: userDataType; token: string }> = React.memo(({ user, 
   );
 });
 
-export default DiscoverPeople;
+export default React.memo(DiscoverPeople);
