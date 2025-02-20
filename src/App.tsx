@@ -18,7 +18,9 @@ const LazyFriendRequest = React.lazy(
   () => import("./componenents/user/friends-related/FriendRequest.tsx")
 );
 const LazyChats = React.lazy(() => import("./componenents/pages/chats_page/Chats.tsx"));
-const LazyMessage = React.lazy(() => import("./componenents/pages/Messages.tsx"));
+const LazyMessage = React.lazy(
+  () => import("./componenents/pages/messageRelatedFiles/Messages.tsx")
+);
 
 //app Context
 export const AppContext = React.createContext<null | (userDataType & {})>(null);
@@ -30,7 +32,7 @@ function App() {
   //fetch for user data on component mount
   useEffect(() => {
     try {
-      const data = localStorage.getItem("UserData");
+      const data = sessionStorage.getItem("UserData");
       if (!data) throw new Error("could not fetch user data");
 
       //deserialise user data
