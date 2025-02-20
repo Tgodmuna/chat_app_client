@@ -6,23 +6,26 @@ import { AppContext } from "../../../App.tsx";
 import MessageHeader from "./Message.header.tsx";
 import MessagesList from "./Message.list.tsx";
 import MessageInput from "./Message.inputForm.tsx";
+import { displayMessage, markMessageAsDelivered, markMessageAsRead } from "./messageStatus.ts";
 
-type Message = {
-  content: string;
+export type Message = {
+  content: string | undefined;
   sender: { _id: string | undefined };
-  reciever: { _id: string };
-  createdAt: string;
-  read: boolean;
-  delivered: boolean;
-  conversationID: any;
+  reciever: { _id: string | undefined };
+  createdAt: string | undefined;
+  read: boolean | undefined;
+  delivered: boolean | undefined;
+  conversationID: string | undefined;
+  ID?: number | undefined;
 };
-
 export interface SendMessageEvent extends React.FormEvent<HTMLFormElement> {}
 
 interface MessagePayload {
   recipientID: string;
   content: string;
   type: string;
+  messageID: number;
+  event: string;
 }
 
 const MessageComponent = () => {
@@ -33,29 +36,69 @@ const MessageComponent = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const clientInfo = useContext(AppContext);
   const location = useLocation();
-  const { conversationId, recieverInfo } = location.state;
+  const [locationState, setLocationState] = useState(location.state);
 
+  useEffect(() => {
+    if (!location.state) {
+      console.log("no location state passed", location.state);
+      return;
+    }
+    setLocationState(location.state);
+  }, [location.state]);
+
+  function notifyUser(message: string) {
+    console.log("message status", message);
+    alert(message);
+  }
+
+  //fetch old messages on component mount
   useEffect(() => {
     async function fetchMessages() {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/messages/${conversationId}?page=1&limit=10`,
+          `http://localhost:7000/api/messages/${location.state?.conversationId}?page=1&limit=15`,
           { headers: { "x-auth-token": token } }
         );
+        console.log(response.data);
         setMessages(response.data);
       } catch (error) {
         console.error("Error fetching messages", error);
       }
     }
-    if (conversationId) fetchMessages();
-  }, [conversationId, token]);
+    if (location.state?.conversationId) fetchMessages();
+  }, [location.state?.conversationId, token]);
 
+  //setup websocket connection
   useEffect(() => {
     socket.current = new WebSocket(`ws://localhost:7000?token=${token}`);
-
+    if (socket.current) socket.current.onopen = (e) => console.log("connected to websocket");
+    //recieveing a message from a user
     socket.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      const data = JSON.parse(event.data);
+
+      console.log("new message entered:", data);
+
+      switch (data.event) {
+        case "newMessage":
+          displayMessage(data, setMessages);
+          break;
+
+        case "messageDelivered":
+          markMessageAsDelivered(data.messageID, setMessages);
+          break;
+
+        case "messageNotDelivered":
+          notifyUser("Message not delivered. Recipient is offline.");
+          break;
+
+        case "messageRead":
+          console.log("called markMessageAsRead() ");
+          markMessageAsRead(data.messageID, setMessages);
+          break;
+
+        default:
+          console.warn("Unknown event received:", data);
+      }
     };
 
     return () => socket.current?.close();
@@ -65,6 +108,7 @@ const MessageComponent = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  //sending message to a user
   const handleSendMessage = useCallback(
     async (e: SendMessageEvent) => {
       e.preventDefault();
@@ -73,20 +117,25 @@ const MessageComponent = () => {
       const message: Message = {
         content: newMessage,
         sender: { _id: clientInfo?._id },
-        reciever: { _id: recieverInfo._id },
+        reciever: { _id: locationState.recieverInfo._id },
         createdAt: new Date().toISOString(),
         read: false,
-        delivered: true,
-        conversationID: conversationId,
+        delivered: false,
+        conversationID: location.state?.conversationId,
+        ID: Date.now(),
       };
 
       const payload: MessagePayload = {
-        recipientID: recieverInfo._id,
+        recipientID: locationState.recieverInfo._id,
         content: newMessage,
         type: "direct",
+        messageID: Date.now(),
+        event: "newMessage",
       };
 
       try {
+        console.log("data sent to socket:", payload);
+
         socket.current?.send(JSON.stringify(payload));
         setMessages((prevMessages) => [...prevMessages, message]);
         setNewMessage("");
@@ -94,15 +143,16 @@ const MessageComponent = () => {
         console.error("Error sending message", error);
       }
     },
-    [clientInfo?._id, conversationId, newMessage, recieverInfo._id]
+    [clientInfo?._id, location.state?.conversationId, locationState, newMessage]
   );
 
   return (
     <div className="flex flex-col h-screen">
-      <MessageHeader recieverInfo={recieverInfo} />
+      <MessageHeader recieverInfo={locationState?.recieverInfo} />
       <MessagesList
         messagesEndRef={messagesEndRef}
-        messages={messages}
+        messages={messages && messages}
+        socket={socket}
       />
 
       <MessageInput
@@ -114,4 +164,4 @@ const MessageComponent = () => {
   );
 };
 
-export default MessageComponent;
+export default React.memo(MessageComponent);
