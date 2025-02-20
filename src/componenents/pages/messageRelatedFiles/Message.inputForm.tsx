@@ -7,8 +7,11 @@ type SendMessageFormProps = {
   setNewMessage: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const MessageInput: React.FC<SendMessageFormProps> = ({ onSendMessage,newMessage , setNewMessage }) => {
-
+const MessageInput: React.FC<SendMessageFormProps> = ({
+  onSendMessage,
+  newMessage,
+  setNewMessage,
+}) => {
   return (
     <form
       onSubmit={onSendMessage}
@@ -29,4 +32,4 @@ const MessageInput: React.FC<SendMessageFormProps> = ({ onSendMessage,newMessage
   );
 };
 
-export default MessageInput;
+export default React.memo(MessageInput);
