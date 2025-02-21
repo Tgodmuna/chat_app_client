@@ -86,7 +86,6 @@ export async function handleSubmit(
     const result = await axios.post("http://localhost:7000/api/auth/sign-in", formData);
 
     if (result.status === 200) {
-      console.log(result);
       setSuccessMsg(result?.data?.message);
       setIsloading(false);
       setIsError(false);
@@ -94,8 +93,8 @@ export async function handleSubmit(
       const token = result.data.token;
       sessionStorage.setItem("token", token);
 
-      //serialized and save user data to localstorage
-      localStorage.setItem("UserData", JSON.stringify(result.data.user));
+      //serialized and save user data to sessionStorage
+      sessionStorage.setItem("UserData", JSON.stringify(result.data.user));
 
       //navigate to the dashboard
       navigate("/dashboard");

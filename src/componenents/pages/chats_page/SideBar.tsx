@@ -9,7 +9,7 @@ import Navigation from "./Navigation.tsx";
  */
 const SideBar: React.FC = (): JSX.Element => {
   return (
-    <div className={` max-h-[100vh] h-[100vh] w-[4rem] bg-gray-50`}>
+    <div className={`h-[100vh]  w-[4rem] bg-gray-50`}>
       <Navigation />
     </div>
   );

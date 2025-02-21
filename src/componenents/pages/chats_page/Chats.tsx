@@ -1,20 +1,18 @@
 import axios from "axios";
-import React, { useState, useEffect, type ChangeEvent, useContext, useRef } from "react";
-import type { Conversation, Endpoint } from "../../../types";
+import React, { useState, useEffect, type ChangeEvent, useContext } from "react";
+import type { Conversation, Endpoint, Participant } from "../../../types";
 import { FaRegMessage, FaRegSquarePlus } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { TfiMore } from "react-icons/tfi";
 import { MdPerson3 } from "react-icons/md";
-import { LayoutContext } from "./Layout.tsx";
 import { UseFetchToken } from "../../hooks/UseFetchToken.ts";
-import Message from "../Messages.tsx";
 import { AppContext } from "../../../App.tsx";
+import { useNavigate } from "react-router-dom";
 
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
-  const [selectedChat, setSelectedChat] = useState<null | Conversation>(null);
   const token: string | null = UseFetchToken();
-  const recipientID = useRef<null | string>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -40,7 +38,7 @@ const Chats: React.FC = () => {
         if (!response) throw new Error("No response from server");
         console.log(response);
 
-        setChats(response[0].data.chats);
+        setChats(response[0].data);
       } catch (error) {
         console.error(error);
       }
@@ -49,80 +47,64 @@ const Chats: React.FC = () => {
     fetchChats();
   }, [token]);
 
-  const layoutContext = useContext(LayoutContext);
   const appContext = useContext(AppContext);
-
-  //chat selection handler
-  const handleChatClick = (chat: Conversation, recipient: string) => {
-    setSelectedChat(chat);
-    recipientID.current = recipient;
-  };
 
   //conversation list
   //-this will list all the conversations user involved in.
-  //-it will also enable selection of a single chat and use its id to fetch related messages
   const conversations = chats?.map((chat) => {
     const lastMessage = chat.lastMessage;
 
-    const profilePicturePath = chat.participants.find(
-      (participant) => participant._id !== appContext?._id
-    )?.profilePicture;
-
-    //this is the person who sent the message
-    const MessageSender = chat.participants.find(
-      (participant) => participant._id !== appContext?._id
-    );
+    const recipient = chat.participants.find((participant) => participant._id !== appContext?._id);
+    const profilePicturePath = recipient?.profilePicture;
+    let recipientDetails: Participant = {
+      _id: recipient?._id,
+      profilePicture: recipient?.profilePicture,
+      username: recipient?.username,
+      lastSeen: recipient?.lastSeen,
+      isOnline: recipient?.isOnline,
+      name: recipient?.name,
+    };
 
     return (
       <div
         key={chat._id}
-        onClick={() => MessageSender && handleChatClick(chat, MessageSender._id)}
-        className={`flex flex-row items-center justify-between w-full p-1 rounded-xl bg-white shadow-md cursor-pointer`}>
-        <div
-          className={`flex justify-between items-center w-full bg-slate-300  p-4 border border-b-0 border-gray-600 `}>
-          <div className="flex items-center justify-center gap-2">
-            {profilePicturePath ? (
-              <img
-                src={profilePicturePath}
-                alt="profile"
-                className="rounded-full size-[1rem] m-auto"
-              />
-            ) : (
-              <MdPerson3 className={`w-full text-2xl text-gray-500 m-auto`} />
-            )}
-
-            <div className="flex flex-col items-center justify-center gap-3">
-              <h1 className={`text-black`}> {MessageSender?.name}</h1>
-              <p className={`text-sm italic text-neutral-400 m-auto`}>{lastMessage?.content}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col w-[3rem] items-center justify-center gap-2">
-            <div className={`p-4 size-8 bg-green-700 text-white text-start italic`}>{3}</div>
-            <TfiMore className="text-green-400 text-[5px]" />
+        onClick={() =>
+          navigate("/dashboard/message", {
+            state: {
+              recieverInfo: recipientDetails,
+              recipientID: recipient?._id,
+              conversationId: chat?._id,
+            },
+          })
+        }
+        className="flex items-center justify-between w-full p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer">
+        <div className="flex items-center gap-4">
+          {profilePicturePath ? (
+            <img
+              src={profilePicturePath}
+              alt="profile"
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <MdPerson3 className="w-10 h-10 text-gray-500" />
+          )}
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold text-gray-800">{recipient?.name}</span>
+            <span className="text-sm text-gray-500">{lastMessage?.content}</span>
           </div>
         </div>
+        <TfiMore className="text-gray-400" />
       </div>
     );
   });
 
   return (
     <div
-      className={`flex flex-col ${
-        layoutContext?.showChats ? "w-full absolute px-1 " : "w-0  absolute"
-      }  bg-slate-100 transition-all duration-700 items-center  overflow-y-hidden gap-[1rem] pt-[2rem]  overflow-scroll h-[100vh]`}>
+      className={`flex flex-col w-full  px-1 
+      }  bg-slate-100 items-center overflow-y-hidden gap-[1rem] pt-[2rem]  overflow-scroll h-[100vh]`}>
       <Header />
       <Search chats={chats} />
-      {selectedChat ? (
-        <div className="selected-chat-container">
-          <Message
-            recipientID={recipientID.current ?? ""}
-            conversationId={selectedChat._id}
-          />
-        </div>
-      ) : (
-        conversations
-      )}
+      {conversations}
     </div>
   );
 };
@@ -130,8 +112,6 @@ export default Chats;
 
 //Header component
 const Header: React.FC = () => {
-  const layoutContext = useContext(LayoutContext);
-
   return (
     <div className={`flex flex-row items-center w-full justify-between p-1 `}>
       <p className={`text-neutral-700  text-xl font-bold  capitalize `}>Chats</p>
@@ -148,7 +128,7 @@ const Header: React.FC = () => {
           <FaRegMessage className={`text-neutral-700`} />
         </div>
         <div
-          onClick={() => layoutContext?.setShowChats(false)}
+          onClick={() => {}}
           title={"go back"}
           className="chatIconStyle">
           <FaTimes className={`text-neutral-700`} />
@@ -159,12 +139,12 @@ const Header: React.FC = () => {
 };
 
 //search component
- const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
+const Search: React.FC<{ chats: Conversation[] | null }> = React.memo(({ chats }) => {
   const [SearchData, setSearchData] = useState<null | string>(null);
   const [searchResult, setSearchResult] = useState<Conversation[] | null>(null);
   const [CHATS] = useState<undefined | typeof chats>(chats);
   const [showSearchData, setshowSearchData] = useState<boolean>(false);
-
+  const appConetxt = useContext(AppContext);
   const turnOnSearchData = React.useCallback(
     (value: boolean) => {
       if (searchResult && searchResult.length > 0) {
@@ -185,8 +165,8 @@ const Header: React.FC = () => {
 
         const result = CHATS.filter((CHAT) => {
           return CHAT.participants.some((participant) => {
-            if (participant._id !== "id") {
-              return participant.name.includes(text);
+            if (participant._id !== appConetxt?._id) {
+              return participant.name?.includes(text) ?? false;
             }
 
             return false;
@@ -199,7 +179,7 @@ const Header: React.FC = () => {
         console.error(exception);
       }
     },
-    [CHATS, turnOnSearchData]
+    [CHATS, appConetxt?._id, turnOnSearchData]
   );
 
   useEffect(() => {
