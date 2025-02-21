@@ -3,8 +3,8 @@ import type { Message } from "./Messages";
 export const displayMessage = (data: any, setMessages) => {
   const message: Message = {
     content: data.content,
-    sender: { _id: data.senderID },
-    reciever: { _id: data.recieverID },
+    sender: { _id: data.sender },
+    reciever: { _id: data.receiver },
     createdAt: data.createdAt,
     read: data.read,
     delivered: data.delivered,
@@ -23,12 +23,16 @@ export function markMessageAsDelivered(messageID: string, setMessages) {
   );
 }
 
-export function markMessageAsRead(data, setMessages): void {
+export function markMessageAsRead(response, setMessages): void {
+  const { data, messageID,  } = response;
+
   setMessages((prevMessages) =>
-    prevMessages.map((message) =>
-      message.ID === data.messageID ? [...prevMessages, data.updatedMessage] : [...prevMessages]
+    prevMessages.map((msg) =>
+      msg.ID === messageID
+        ? { ...msg, read: true, updatedAt: data.updatedAt }
+        : msg
     )
   );
+
   console.log("updated successfully");
-  //NOTE: remember to update this  function to make a call to the server to update the message status
 }
