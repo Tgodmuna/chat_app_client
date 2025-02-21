@@ -36,27 +36,21 @@ const MessageComponent = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const clientInfo = useContext(AppContext);
   const location = useLocation();
-  const [locationState, setLocationState] = useState(location.state);
-
-  useEffect(() => {
-    if (!location.state) {
-      console.log("no location state passed", location.state);
-      return;
-    }
-    setLocationState(location.state);
-  }, [location.state]);
+  const { recieverInfo, conversationId } = location.state;
 
   function notifyUser(message: string) {
     console.log("message status", message);
     alert(message);
   }
 
+  useEffect(()=>console.log(messages),[messages])
+
   //fetch old messages on component mount
   useEffect(() => {
     async function fetchMessages() {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/messages/${location.state?.conversationId}?page=1&limit=15`,
+          `http://localhost:7000/api/messages/${conversationId}?page=1&limit=15`,
           { headers: { "x-auth-token": token } }
         );
         console.log(response.data);
@@ -66,7 +60,7 @@ const MessageComponent = () => {
       }
     }
     if (location.state?.conversationId) fetchMessages();
-  }, [location.state?.conversationId, token]);
+  }, [conversationId, location.state?.conversationId, token]);
 
   //setup websocket connection
   useEffect(() => {
@@ -90,10 +84,9 @@ const MessageComponent = () => {
         case "messageNotDelivered":
           notifyUser("Message not delivered. Recipient is offline.");
           break;
-
         case "messageRead":
           console.log("called markMessageAsRead() ");
-          markMessageAsRead(data.messageID, setMessages);
+          markMessageAsRead(data, setMessages);
           break;
 
         default:
@@ -117,7 +110,7 @@ const MessageComponent = () => {
       const message: Message = {
         content: newMessage,
         sender: { _id: clientInfo?._id },
-        reciever: { _id: locationState.recieverInfo._id },
+        reciever: { _id: recieverInfo?._id },
         createdAt: new Date().toISOString(),
         read: false,
         delivered: false,
@@ -126,7 +119,7 @@ const MessageComponent = () => {
       };
 
       const payload: MessagePayload = {
-        recipientID: locationState.recieverInfo._id,
+        recipientID: recieverInfo?._id,
         content: newMessage,
         type: "direct",
         messageID: Date.now(),
@@ -143,12 +136,12 @@ const MessageComponent = () => {
         console.error("Error sending message", error);
       }
     },
-    [clientInfo?._id, location.state?.conversationId, locationState, newMessage]
+    [clientInfo?._id, location.state?.conversationId, newMessage, recieverInfo._id]
   );
 
   return (
     <div className="flex flex-col h-screen">
-      <MessageHeader recieverInfo={locationState?.recieverInfo} />
+      <MessageHeader recieverInfo={recieverInfo} />
       <MessagesList
         messagesEndRef={messagesEndRef}
         messages={messages && messages}
