@@ -46,9 +46,11 @@ const MessagesList: React.FC<MessagesListProps> = ({ messages, messagesEndRef, s
                       messageID: message?.ID,
                       message: "message is read",
                       time: Date.now(),
+                      recipientID: message.sender?._id, //user who gets back the updated message in real-time
                     })
                   );
               }
+              return;
             }
           }
         }
@@ -70,8 +72,6 @@ const MessagesList: React.FC<MessagesListProps> = ({ messages, messagesEndRef, s
         <p className="text-gray-500 text-center">No messages yet</p>
       ) : (
         messages.map((message, index) => {
-          console.log("eachMsgID:", message.ID);
-
           return (
             <div
               id={`msg-${message.ID}`}
