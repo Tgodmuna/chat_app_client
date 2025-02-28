@@ -25,8 +25,8 @@ Make sure you have Node.js and npm installed on your machine.
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/your-username/chat-app.git
-   cd chat-app
+   git clone https://github.com/Tgodmuna/chat-app.git
+   cd chat-app         
    ```
 
 2. Install the dependencies:
