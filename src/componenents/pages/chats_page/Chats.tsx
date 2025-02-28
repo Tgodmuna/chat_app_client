@@ -18,7 +18,7 @@ const Chats: React.FC = () => {
     const fetchChats = async () => {
       try {
         if (!token) {
-          throw new Error("No token found");
+          return;
         }
 
         const endpoints: Endpoint[] = [
