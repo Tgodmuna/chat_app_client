@@ -43,10 +43,11 @@ const MessageComponent = () => {
     alert(message);
   }
 
-  useEffect(()=>console.log(messages),[messages])
+  useEffect(() => console.log(messages), [messages]);
 
   //fetch old messages on component mount
   useEffect(() => {
+    if (!token) return;
     async function fetchMessages() {
       try {
         const response = await axios.get(
@@ -64,6 +65,8 @@ const MessageComponent = () => {
 
   //setup websocket connection
   useEffect(() => {
+    if (!token) return;
+
     socket.current = new WebSocket(`ws://localhost:7000?token=${token}`);
     if (socket.current) socket.current.onopen = (e) => console.log("connected to websocket");
     //recieveing a message from a user
