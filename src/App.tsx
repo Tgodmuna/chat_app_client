@@ -27,10 +27,12 @@ export const AppContext = React.createContext<null | (userDataType & {})>(null);
 
 function App() {
   const [UserData, setUserData] = useState<null | userDataType>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const token = UseFetchToken();
 
   //fetch for user data on component mount
   useEffect(() => {
+    if (!token) return;
+
     try {
       const data = sessionStorage.getItem("UserData");
       if (!data) throw new Error("could not fetch user data");
@@ -42,18 +44,6 @@ function App() {
       console.log(error);
     }
   }, [token]);
-
-  //fetch token from session storage
-  const TOKEN = UseFetchToken();
-  useEffect(() => {
-    if (!TOKEN) {
-      console.log("no token found");
-      return;
-    }
-
-    console.log("token found", TOKEN);
-    setToken(TOKEN);
-  }, [TOKEN]);
 
   return (
     <AppContext.Provider value={UserData && UserData}>
@@ -125,4 +115,4 @@ function App() {
   );
 }
 
-export default App;
+export default React.memo(App);
