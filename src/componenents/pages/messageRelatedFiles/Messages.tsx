@@ -47,7 +47,7 @@ const MessageComponent = () => {
 
   //fetch old messages on component mount
   useEffect(() => {
-    if (!token) return;
+    if (!token) return; //if no token, let it terminate the network request since it is an authorization key for the request.
     async function fetchMessages() {
       try {
         const response = await axios.get(
