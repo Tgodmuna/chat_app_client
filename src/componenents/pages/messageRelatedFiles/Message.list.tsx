@@ -66,47 +66,45 @@ const MessagesList: React.FC<MessagesListProps> = ({ messages, messagesEndRef, s
     };
   }, [clientInfo?._id, messages, socket]);
 
-  return (
-    <div className="flex flex-col w-full flex-grow p-4 overflow-y-auto md:w-[100vw]">
-      {messages.length === 0 ? (
-        <p className="text-gray-500 text-center">No messages yet</p>
-      ) : (
-        messages.map((message, index) => {
-          return (
-            <div
-              id={`msg-${message.ID}`}
-              key={index}
-              className={`max-w-xs p-1 my-2 rounded-lg ${
-                message.sender?._id === clientInfo?._id
-                  ? "self-end bg-slate-300 text-neutral-600"
-                  : "self-start bg-green-200"
-              }`}>
-              <p className="text-sm p-1">{message.content}</p>
-              <div className="flex  items-center gap-2 justify-between text-xs text-gray-500">
-                <span className={`text-neutral-600 text-xs`}>
-                  {new Date(message?.createdAt as string | number).toLocaleTimeString()}
-                </span>
-                <span className={`text-sm`}>
-                  {message.sender?._id === clientInfo?._id ? (
-                    message.read ? (
-                      <p className={"text-xs text-blue-500"}>seen</p>
-                    ) : message.delivered ? (
-                      "✓✓"
-                    ) : (
-                      "✓"
-                    )
-                  ) : (
-                    ""
-                  )}
-                </span>
-              </div>
-            </div>
-          );
-        })
-      )}
-      <div ref={messagesEndRef} />
-    </div>
-  );
+return (
+  <div className="flex flex-col w-full h-full p-4 overflow-y-auto">
+    {messages.length === 0 ? (
+      <p className="text-gray-500 text-center">No messages yet</p>
+    ) : (
+      messages.map((message, index) => (
+        <div
+          id={`msg-${message.ID}`}
+          key={index}
+          className={`flex flex-col p-2 my-2 rounded-lg max-w-[80%] sm:max-w-[70%] lg:max-w-[60%] ${
+            message.sender?._id === clientInfo?._id
+              ? "self-end bg-slate-300 text-neutral-600"
+              : "self-start bg-green-200"
+          }`}>
+          <p className="text-sm break-words">{message.content}</p>
+          <div className="flex items-center gap-2 justify-between text-xs text-gray-500">
+            <span className="text-neutral-600">
+              {new Date(message?.createdAt as string | number).toLocaleTimeString()}
+            </span>
+            <span className="text-sm">
+              {message.sender?._id === clientInfo?._id ? (
+                message.read ? (
+                  <p className="text-xs text-blue-500">Seen</p>
+                ) : message.delivered ? (
+                  "✓✓"
+                ) : (
+                  "✓"
+                )
+              ) : (
+                ""
+              )}
+            </span>
+          </div>
+        </div>
+      ))
+    )}
+    <div ref={messagesEndRef} />
+  </div>
+);
 };
 
 export default React.memo(MessagesList);
