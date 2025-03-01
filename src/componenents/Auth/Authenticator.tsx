@@ -1,29 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Authenticator: React.FC<{ token: string | null; children: React.ReactNode }> = function ({
+/**
+ * Authenticator component that checks if the user is authenticated based on the provided token.
+ * If the user is not authenticated, it redirects to the login page.
+ *
+ * @param {Object} props - The props object.
+ * @param {string | null} props.token - The authentication token. If null, the user is not authenticated.
+ * @param {React.ReactNode} props.children - The child components to render if the user is authenticated.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
+const Authenticator: React.FC<{ token: string | null; children: React.ReactNode }> = ({
   token,
   children,
-}) {
-  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+}) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
+  const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!token) {
       setIsAuthenticated(false);
-      return;
+      navigate("/login", { replace: true });
+    } else {
+      setIsAuthenticated(true);
     }
-    setIsAuthenticated(true);
-  }, [token]);
+  }, [token, navigate]);
 
-  return (
-    <>
-      {isAuthenticated ? (
-        children
-      ) : (
-        <h1 className={`text-red-500 text-center animate-pulse m-auto text-4xl`}>
-          Not Authenticated, Login or register
-        </h1>
-      )}
-    </>
-  );
+  if (!isAuthenticated) {
+    return (
+      <h1 className="text-red-500 text-center animate-pulse m-auto text-4xl">
+        Not Authenticated, Redirecting...
+      </h1>
+    );
+  }
+
+  return <>{children}</>;
 };
+
 export default Authenticator;
