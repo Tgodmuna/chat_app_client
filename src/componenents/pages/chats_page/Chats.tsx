@@ -8,11 +8,13 @@ import { MdPerson3 } from "react-icons/md";
 import { UseFetchToken } from "../../hooks/UseFetchToken.ts";
 import { AppContext } from "../../../App.tsx";
 import { useNavigate } from "react-router-dom";
+import useEnvironmentUrls from "../../hooks/UseEnvironmentUrls.ts";
 
 const Chats: React.FC = () => {
   const [chats, setChats] = useState<null | Conversation[]>(null);
   const token: string | null = UseFetchToken();
   const navigate = useNavigate();
+  const { serverUrl } = useEnvironmentUrls();
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -23,7 +25,7 @@ const Chats: React.FC = () => {
 
         const endpoints: Endpoint[] = [
           {
-            url: "http://localhost:7000/api/conversations/conversations",
+            url: `${serverUrl}/api/conversations/conversations`,
             headers: {
               "x-auth-token": token,
               "content-type": "application/json",
@@ -45,7 +47,7 @@ const Chats: React.FC = () => {
     };
 
     fetchChats();
-  }, [token]);
+  }, [serverUrl, token]);
 
   const appContext = useContext(AppContext);
 
