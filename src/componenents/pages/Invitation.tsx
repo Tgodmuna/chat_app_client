@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useState } from "react";
+import useEnvironmentUrls from "../hooks/UseEnvironmentUrls";
 
 const AddFriendInvitation: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { serverUrl } = useEnvironmentUrls();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -12,7 +14,7 @@ const AddFriendInvitation: React.FC = () => {
         alert("Please enter an email address.");
         return;
       }
-      await axios.post("http://localhost:7000/api/friend/send-invitation");
+      await axios.post(`${serverUrl}/api/friend/send-invitation`);
 
       alert(`Invitation sent to: ${email}`);
       setEmail("");
