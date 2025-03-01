@@ -8,12 +8,14 @@ import type { userDataType } from "../../../types.tsx";
 import SuccessToast from "../../utils/SuccessToast.tsx";
 import { useNavigate } from "react-router-dom";
 import { FriendComponentContext } from "./Friends.tsx";
+import useEnvironmentUrls from "../../hooks/UseEnvironmentUrls.ts";
 
 const DiscoverPeople: FC<{
   token: string;
 }> = React.memo(({ token }) => {
   const [users, setUsers] = useState<userDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { serverUrl } = useEnvironmentUrls();
 
   const userID = useContext(AppContext)?._id;
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ const DiscoverPeople: FC<{
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:7000/api/friend/users", {
+        const response = await axios.get(`${serverUrl}/api/friend/users`, {
           headers: {
             "Content-Type": "application/json",
             "x-auth-token": token,
@@ -42,15 +44,16 @@ const DiscoverPeople: FC<{
         setLoading(false);
       }
     };
+    if (!token) return;
 
     fetchUsers();
-  }, [token]);
+  }, [serverUrl, token]);
+
+  const filteredUsers = React.useMemo(() => users.filter((user) => user._id !== userID), [users, userID]);
 
   if (loading) {
     return <p className="text-center text-lg text-gray-600 mt-8">Loading users...</p>;
   }
-
-  const filteredUsers = users?.filter((user) => user._id !== userID);
 
   return (
     <div className="p-6 bg-gray-100 w-full min-h-screen">

@@ -7,18 +7,20 @@ import { friendListType, userDataType, type Participant } from "../../../types.t
 import Header from "./Header.tsx";
 import Search from "./Search.tsx";
 import { Link, useNavigate } from "react-router-dom";
+import useEnvironmentUrls from "../../hooks/UseEnvironmentUrls.ts";
 
 const FriendList: FC = React.memo(() => {
   const [listOfFriends, setList] = useState<friendListType>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const token = UseFetchToken();
+  const { serverUrl } = useEnvironmentUrls();
 
   useEffect(() => {
     const fetchFriendsList = async () => {
       if (!token) return;
 
       try {
-        const response = await axios.get(`http://localhost:7000/api/user/friends_list`, {
+        const response = await axios.get(`${serverUrl}/api/user/friends_list`, {
           headers: {
             "x-auth-token": token,
             Accept: "application/json",
@@ -39,7 +41,7 @@ const FriendList: FC = React.memo(() => {
     };
 
     fetchFriendsList();
-  }, [token]);
+  }, [serverUrl, token]);
 
   if (loading)
     return <p className={`text-center m-auto text-xl text-neutral-600`}>Loading friends...</p>;
@@ -128,7 +130,7 @@ const FriendItem: FC<{ friend: userDataType }> = React.memo(({ friend }) => {
               {!friend.bio ? " busy" : friend.bio}
             </span>
           </p>
-            <span
+          <span
             className={`w-[10px] h-[10px] rounded-full absolute left-[-15px] top-[5px] ${
               friend.isOnline ? "bg-green-400" : "bg-orange-600"
             }`}></span>

@@ -3,6 +3,7 @@ import { type FC, useEffect, useState } from "react";
 import type { userDataType } from "../../../types";
 import SuccessToast from "../../utils/SuccessToast.tsx";
 import React from "react";
+import useEnvironmentUrls from "../../hooks/UseEnvironmentUrls.ts";
 
 const FriendRequest: FC<{ token: string }> = React.memo(({ token }) => {
   const [requests, setRequests] = useState<userDataType[]>([]);
@@ -10,12 +11,14 @@ const FriendRequest: FC<{ token: string }> = React.memo(({ token }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [ errorMessage, setErrorMessage ] = useState<string>( "" );
+  const { serverUrl } = useEnvironmentUrls();
+
 
   useEffect(() => {
     const fetchFriendRequests = async () => {
       try {
-        const response = await axios.get("http://localhost:7000/api/friend/friend-requests", {
+        const response = await axios.get(`${serverUrl}/api/friend/friend-requests`, {
           headers: {
             "Content-Type": "application/json",
             "x-auth-token": token,
@@ -36,7 +39,7 @@ const FriendRequest: FC<{ token: string }> = React.memo(({ token }) => {
     };
 
     fetchFriendRequests();
-  }, [token]);
+  }, [serverUrl, token]);
 
   const handleResponse = async (url: string, requesterID: string, action: string) => {
     try {
