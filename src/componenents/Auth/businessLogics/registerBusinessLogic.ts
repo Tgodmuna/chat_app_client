@@ -40,7 +40,7 @@ export const handleSubmit: FormSubmitHandlerType = async (
 
     // Post the data after successful validation
     const result = await axios.post<{ data: any }>(
-      "http://localhost:7000/api/auth/register",
+      `${process.env.REACT_APP_DEV_SERVER_URL}/api/auth/register`,
       formData
     );
 
