@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
@@ -24,6 +25,7 @@ const LazyMessage = React.lazy(
 
 //app Context
 export const AppContext = React.createContext<null | (userDataType & {})>(null);
+dotenv.config();
 
 function App() {
   const [UserData, setUserData] = useState<null | userDataType>(null);
@@ -49,6 +51,10 @@ function App() {
     <AppContext.Provider value={UserData && UserData}>
       <div className="App w-fit pb-0 ">
         <Routes>
+          <Route
+            path="/"
+            element={<UseSuspence component={<LazyLogin />} />}
+          />
           {/* dashboard */}
           <Route
             path="/dashboard"
