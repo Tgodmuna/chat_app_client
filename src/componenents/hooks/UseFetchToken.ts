@@ -7,9 +7,7 @@ export const UseFetchToken = () => {
     try {
       const Token = sessionStorage.getItem("token");
 
-      if (!Token) {
-        throw new Error("FROM: UseFetchToken - no Token found");
-      }
+      if ( !Token ) return;   
 
       setToken(Token);
     } catch (exc) {
