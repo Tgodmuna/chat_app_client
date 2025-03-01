@@ -7,6 +7,7 @@ import MessageHeader from "./Message.header.tsx";
 import MessagesList from "./Message.list.tsx";
 import MessageInput from "./Message.inputForm.tsx";
 import { displayMessage, markMessageAsDelivered, markMessageAsRead } from "./messageStatus.ts";
+import useEnvironmentUrls from "../../hooks/UseEnvironmentUrls.ts";
 
 export type Message = {
   content: string | undefined;
@@ -37,6 +38,7 @@ const MessageComponent = () => {
   const clientInfo = useContext(AppContext);
   const location = useLocation();
   const { recieverInfo, conversationId } = location.state;
+  const { serverUrl, websocketUrl } = useEnvironmentUrls();
 
   function notifyUser(message: string) {
     console.log("message status", message);
@@ -51,8 +53,8 @@ const MessageComponent = () => {
     async function fetchMessages() {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/messages/${conversationId}?page=1&limit=15`,
-          { headers: { "x-auth-token": token } }
+          `${serverUrl}/api/messages/${conversationId}?page=1&limit=15`,
+          { headers: { "x-auth-token": token as string } }
         );
         console.log(response.data);
         setMessages(response.data);
@@ -61,13 +63,13 @@ const MessageComponent = () => {
       }
     }
     if (location.state?.conversationId) fetchMessages();
-  }, [conversationId, location.state?.conversationId, token]);
+  }, [conversationId, location.state?.conversationId, serverUrl, token]);
 
   //setup websocket connection
   useEffect(() => {
     if (!token) return;
 
-    socket.current = new WebSocket(`ws://localhost:7000?token=${token}`);
+    socket.current = new WebSocket(`${websocketUrl}?token=${token}`);
     if (socket.current) socket.current.onopen = (e) => console.log("connected to websocket");
     //recieveing a message from a user
     socket.current.onmessage = (event) => {
@@ -98,7 +100,7 @@ const MessageComponent = () => {
     };
 
     return () => socket.current?.close();
-  }, [token]);
+  }, [token, websocketUrl]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
