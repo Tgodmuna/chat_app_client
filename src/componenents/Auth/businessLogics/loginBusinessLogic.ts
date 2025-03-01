@@ -83,7 +83,7 @@ export async function handleSubmit(
     }
 
     // proceed with the posting
-    const result = await axios.post("http://localhost:7000/api/auth/sign-in", formData);
+    const result = await axios.post(`${process.env.REACT_APP_DEV_SERVER_URL}/api/auth/sign-in`, formData);
 
     if (result.status === 200) {
       setSuccessMsg(result?.data?.message);
