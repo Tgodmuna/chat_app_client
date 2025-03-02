@@ -38,9 +38,15 @@ export const handleSubmit: FormSubmitHandlerType = async (
       return;
     }
 
+    // Determine the base URL based on the environment
+    const baseURL =
+      process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_PROD_SERVER_URL
+      : process.env.REACT_APP_DEV_SERVER_URL;
+
     // Post the data after successful validation
     const result = await axios.post<{ data: any }>(
-      `${process.env.REACT_APP_DEV_SERVER_URL}/api/auth/register`,
+      `${baseURL}/api/auth/register`,
       formData
     );
 
