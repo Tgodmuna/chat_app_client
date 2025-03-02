@@ -29,7 +29,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full min-h-screen generalBG p-4 flex items-center justify-center">
+    <div className="w-[100vw] min-h-screen generalBG p-4 flex items-center justify-center">
       <div className="animate-fadeIn w-full max-w-md">
         <h1 className="text-2xl font-bold pt-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-gray-600 text-center mb-8 animate-pulse">
           Create Your Account
