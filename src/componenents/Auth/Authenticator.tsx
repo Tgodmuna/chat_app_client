@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UseFetchToken } from "../hooks/UseFetchToken";
 
 /**
  * Authenticator component that checks if the user is authenticated based on the provided token.
@@ -11,10 +12,8 @@ import { useNavigate } from "react-router-dom";
  *
  * @returns {JSX.Element} The rendered component.
  */
-const Authenticator: React.FC<{ token: string | null; children: React.ReactNode }> = ({
-  token,
-  children,
-}) => {
+const Authenticator: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = UseFetchToken();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
   const navigate = useNavigate();
 

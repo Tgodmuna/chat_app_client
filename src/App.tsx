@@ -61,7 +61,7 @@ function App() {
             element={
               <UseSuspence
                 component={
-                  <Authenticator token={token}>
+                  <Authenticator >
                     <LazyLayout />
                   </Authenticator>
                 }
