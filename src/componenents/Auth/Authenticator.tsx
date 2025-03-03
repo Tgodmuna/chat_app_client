@@ -17,7 +17,8 @@ const Authenticator: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect( () => {
+    console.log(token)
     if (!token) {
       setIsAuthenticated(false);
       setTimeout(() => {
