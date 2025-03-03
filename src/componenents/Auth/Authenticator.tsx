@@ -20,7 +20,9 @@ const Authenticator: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   useEffect(() => {
     if (!token) {
       setIsAuthenticated(false);
-      navigate("/login", { replace: true });
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 2000); // 2 seconds delay
     } else {
       setIsAuthenticated(true);
     }
