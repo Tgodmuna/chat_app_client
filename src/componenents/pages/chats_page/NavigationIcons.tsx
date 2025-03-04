@@ -1,7 +1,10 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { FaSignOutAlt, FaUserMd } from "react-icons/fa";
 import { FaGears, FaRegHeart, FaRegMessage, FaUserPen } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import useEnvironmentUrls from "../../hooks/UseEnvironmentUrls.ts";
+import { UseFetchToken } from "../../hooks/UseFetchToken.ts";
 
 /**
  * NavigationIcons component renders a vertical navigation bar with icons.
@@ -24,11 +27,13 @@ import { useNavigate } from "react-router-dom";
  */
 const NavigationIcons: React.FC = () => {
   const [activeIcon, setActiveIcon] = useState<string>("");
+  const { serverUrl } = useEnvironmentUrls();
 
   const handleIconClick = (iconName: string) => {
     setActiveIcon(iconName);
   };
   let navigate = useNavigate();
+  const token = UseFetchToken();
 
   return (
     <div className="flex flex-col size-full justify-between text-neutral-700">
@@ -89,7 +94,36 @@ const NavigationIcons: React.FC = () => {
           className={`hover:text-green-500 transition-colors duration-300 ${
             activeIcon === "signOut" ? "text-green-500 scale-125 transition-all duration-200" : ""
           }`}
-          onClick={() => handleIconClick("signOut")}
+          onClick={async () => {
+            handleIconClick("signOut");
+            //contact the server for blacklisting of the token
+            try {
+              let response = await axios.post(
+                `${serverUrl}/api/auth/logout`,
+                {},
+                {
+                  headers: {
+                    "x-auth-token": token ?? "",
+                  },
+                }
+              );
+
+              if (!response) {
+                console.log("error", response);
+                return;
+              }
+
+              if (response.data?.isLogOut) {
+                //remove token from session storage
+                sessionStorage.removeItem("token");
+                //navigate user out to login page
+                navigate("/login", { replace: true });
+                return;
+              }
+            } catch (exc) {
+              console.log(exc);
+            }
+          }}
         />
       </div>
     </div>
