@@ -1,29 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UseFetchToken } from "../hooks/UseFetchToken";
+import { UseFetchToken } from "../hooks/UseFetchToken.ts";
 
-/**
- * Authenticator component that checks if the user is authenticated based on the provided token.
- * If the user is not authenticated, it redirects to the login page.
- *
- * @param {Object} props - The props object.
- * @param {string | null} props.token - The authentication token. If null, the user is not authenticated.
- * @param {React.ReactNode} props.children - The child components to render if the user is authenticated.
- *
- * @returns {JSX.Element} The rendered component.
- */
 const Authenticator: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = UseFetchToken();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  useEffect( () => {
-    console.log(token)
+  useEffect(() => {
+    console.log("Token from UseFetchToken:", token);
+
+    // if (token === null) return;
+
     if (!token) {
+      console.log("No token found, redirecting...");
       setIsAuthenticated(false);
       setTimeout(() => {
         navigate("/login", { replace: true });
-      }, 2000); // 2 seconds delay
+      }, 2000);
     } else {
       setIsAuthenticated(true);
     }
@@ -40,4 +34,4 @@ const Authenticator: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   return <>{children}</>;
 };
 
-export default Authenticator;
+export default React.memo(Authenticator);
