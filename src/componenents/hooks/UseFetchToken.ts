@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 
 export const UseFetchToken = () => {
-  const [token, setToken] = useState<null | string>(null);
+  const [token, setToken] = useState<string | null>(() => sessionStorage.getItem("token"));
 
   useEffect(() => {
-    try {
-      const Token = sessionStorage.getItem("token");
+    const checkToken = () => {
+      const storedToken = sessionStorage.getItem("token");
 
-      if ( !Token ) return;   
+      if (storedToken !== token) setToken(storedToken);
+      return;
+    };
 
-      setToken(Token);
-    } catch (exc) {
-      console.log(exc);
-    }
-  }, []); 
+    // Poll every 2 seconds to detect changes
+    const interval = setInterval(checkToken, 2000);
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   return token;
 };
