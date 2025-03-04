@@ -8,10 +8,6 @@ const Authenticator: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Token from UseFetchToken:", token);
-
-    // if (token === null) return;
-
     if (!token) {
       console.log("No token found, redirecting...");
       setIsAuthenticated(false);
