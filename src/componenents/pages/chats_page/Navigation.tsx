@@ -12,8 +12,11 @@ const Navigation: React.FC = () => {
   const navigate = useNavigate();
   return (
     <nav className={`flex bg-inherit h-[100vh] flex-col w-full items-center`}>
-      <div className={`w-full bg-green-600 p-5 text-4xl text-white text-center`}>
-        <FaRegCommentDots onClick={() => navigate("/dashboard")} />
+      <div className={`w-full  bg-green-600 p-5 text-4xl text-white text-center`}>
+        <FaRegCommentDots
+          className={`cursor-pointer transition-all duration-300 scale-100`}
+          onClick={() => navigate("/dashboard")}
+        />
       </div>
 
       <NavigationIcons />
