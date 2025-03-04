@@ -56,7 +56,7 @@ const Header: React.FC<{
             friendComponentContext?.toggleOnOutlet((prev) => !prev);
           }}
           title="Discover Friends"
-          className="flex items-center gap-1 px-3 py-2 bg-green-400 text-white rounded-lg hover:bg-blue-600 transition">
+          className="flex items-center gap-1 px-2 py-2 bg-green-400 text-white rounded-lg hover:bg-green-600 transition">
           <FaRegSquarePlus className="text-white" />
           <span className="text-xs hidden sm:inline-block font-medium">Add Friends</span>
         </button>
