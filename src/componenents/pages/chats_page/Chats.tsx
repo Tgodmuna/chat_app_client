@@ -102,11 +102,14 @@ const Chats: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col w-full  px-1 
-      }  bg-slate-100 items-center overflow-y-hidden gap-[1rem] pt-[2rem]  overflow-scroll h-[100vh]`}>
+      className={`flex flex-col w-full px-1 bg-slate-100 items-center overflow-y-hidden gap-[1rem] pt-[2rem] overflow-scroll h-[100vh]`}>
       <Header />
       <Search chats={chats} />
-      {conversations}
+      {conversations?.length === 0 ? (
+        <p className={`text-sm text-neutral-600`}>no conversation yet</p>
+      ) : (
+        conversations
+      )}
     </div>
   );
 };
