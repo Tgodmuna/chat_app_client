@@ -7,6 +7,7 @@ import type { userDataType } from "./types.tsx";
 import Authenticator from "./componenents/Auth/Authenticator.tsx";
 import { UseFetchToken } from "./componenents/hooks/UseFetchToken.ts";
 import Friends from "./componenents/user/friends-related/Friends.tsx";
+import ErrorBoundary from "./componenents/ErrorBundaries.tsx";
 
 //lazy imports
 const LazyLogin = React.lazy(() => import("./componenents/Auth/Login.tsx"));
@@ -48,76 +49,78 @@ function App() {
   }, [token]);
 
   return (
-    <AppContext.Provider value={UserData && UserData}>
-      <div className="App w-fit pb-0 ">
-        <Routes>
-          <Route
-            path="/"
-            element={<UseSuspence component={<LazyLogin />} />}
-          />
-          {/* dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              <UseSuspence
-                component={
-                  <Authenticator >
-                    <LazyLayout />
-                  </Authenticator>
-                }
-              />
-            }>
+    <ErrorBoundary>
+      <AppContext.Provider value={UserData && UserData}>
+        <div className="App w-fit pb-0 ">
+          <Routes>
             <Route
-              path="chats"
-              element={<UseSuspence component={<UseSuspence component={<LazyChats />} />} />}
-            />
-
-            <Route
-              path={"message"}
-              element={<UseSuspence component={<LazyMessage />} />}
-            />
-
-            {/*  related friends route */}
-            <>
-              <Route
-                path="friends"
-                element={<UseSuspence component={<Friends />} />}>
-                <Route
-                  path={"friendRequest"}
-                  element={<UseSuspence component={<LazyFriendRequest token={token ?? ""} />} />}
-                />
-
-                <Route
-                  path="discover_People"
-                  element={<UseSuspence component={<LazyDiscoverPeople token={token ?? ""} />} />}
-                />
-              </Route>
-            </>
-
-            <Route
-              path="profile"
-              element={<UseSuspence component={<LazyChats />} />}
-            />
-            <Route
-              path="settings"
-              element={<UseSuspence component={<LazyChats />} />}
-            />
-          </Route>
-
-          {/* auth routes */}
-          <>
-            <Route
-              path="/login"
+              path="/"
               element={<UseSuspence component={<LazyLogin />} />}
             />
+            {/* dashboard */}
             <Route
-              path="/register"
-              element={<UseSuspence component={<LazyRegister />} />}
-            />
-          </>
-        </Routes>
-      </div>
-    </AppContext.Provider>
+              path="/dashboard"
+              element={
+                <UseSuspence
+                  component={
+                    <Authenticator>
+                      <LazyLayout />
+                    </Authenticator>
+                  }
+                />
+              }>
+              <Route
+                path="chats"
+                element={<UseSuspence component={<UseSuspence component={<LazyChats />} />} />}
+              />
+
+              <Route
+                path={"message"}
+                element={<UseSuspence component={<LazyMessage />} />}
+              />
+
+              {/*  related friends route */}
+              <>
+                <Route
+                  path="friends"
+                  element={<UseSuspence component={<Friends />} />}>
+                  <Route
+                    path={"friendRequest"}
+                    element={<UseSuspence component={<LazyFriendRequest token={token ?? ""} />} />}
+                  />
+
+                  <Route
+                    path="discover_People"
+                    element={<UseSuspence component={<LazyDiscoverPeople token={token ?? ""} />} />}
+                  />
+                </Route>
+              </>
+
+              <Route
+                path="profile"
+                element={<UseSuspence component={<LazyChats />} />}
+              />
+              <Route
+                path="settings"
+                element={<UseSuspence component={<LazyChats />} />}
+              />
+            </Route>
+
+            {/* auth routes */}
+            <>
+              <Route
+                path="/login"
+                element={<UseSuspence component={<LazyLogin />} />}
+              />
+              <Route
+                path="/register"
+                element={<UseSuspence component={<LazyRegister />} />}
+              />
+            </>
+          </Routes>
+        </div>
+      </AppContext.Provider>
+    </ErrorBoundary>
   );
 }
 
